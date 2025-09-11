@@ -70,3 +70,6 @@ def created():
     </body>
 </html>
 ''', 201
+@app.errorhandler(404)
+def not_found(err):
+    return 'нет такой страницы',404
