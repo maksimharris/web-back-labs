@@ -44,6 +44,7 @@ def image():
 count = 0
 @app.route("/counter")
 def counter():
+    path = url_for('clear_counter')
     global count
     count +=1
     time = datetime.datetime.today()
@@ -58,6 +59,8 @@ def counter():
         Дата и время: ''' + str(time) + '''<br>
         Запрошенный адрес: ''' + str(url) + '''<br>
         Ваш IP-адрес: ''' + str(client_ip) + '''<br>
+        <hr>
+        <a href="'''+path+'''">Страница очищения счётчика</a>
     </body>
 <html>
 '''
@@ -78,3 +81,15 @@ def created():
 @app.errorhandler(404)
 def not_found(err):
     return 'нет такой страницы',404
+@app.route("/clear_counter")
+def clear_counter():
+    global count
+    count =0
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <div><i>Счётчик очищен!</i></div>
+    </body>
+</html>
+'''
