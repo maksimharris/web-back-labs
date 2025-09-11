@@ -31,10 +31,12 @@ def author():
 @app.route("/image")
 def image():
     path = url_for("static",filename ='oak.jpg')
+    path1 = url_for("static",filename ='lab1.css')
     return '''
 <!doctype html>
 <html>
     <body>
+        <link rel="stylesheet" href="'''+path1+'''">
         <h1>Дуб</h1>
         <img src =" '''+ path +''' ">
     </body>
