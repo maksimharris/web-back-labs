@@ -101,7 +101,6 @@ def main():
 <head>
     <meta charset="utf-8">
     <title>НГТУ, ФБ, Лабораторные работы</title>
-    <link rel="stylesheet" href="main.css">
 </head>
 <body>
     <header>
@@ -126,7 +125,6 @@ def lab1():
 <head>
     <meta charset="utf-8">
     <title>Лабораторная 1</title>
-    <link rel="stylesheet" href="main.css">
 </head>
 <body>
     Flask &ndash; фреймворк для создания веб-приложений на языке
@@ -139,3 +137,51 @@ def lab1():
 </body>
 </html>
 '''
+@app.route("/not_query")
+def not_query():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        400. Неправильный, некорректный запрос
+    </body>
+</html>
+''',400
+@app.route("/non_auth")
+def non_auth():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        401. Не авторизован
+    </body>
+</html>''',401
+
+@app.route("/no_rights")
+def no_rights():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        403. Запрещено, нет прав
+    </body>
+</html>''',403
+@app.route("/no_methods")
+def no_methods():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        405. Метод не поддерживается
+    </body>
+</html>''',405
+@app.route("/teapot")
+def teapot():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        418. Я - чайник(шуточный код)
+    </body>
+</html>
+''',418
