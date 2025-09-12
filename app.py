@@ -92,3 +92,29 @@ def clear_counter():
     </body>
 </html>
 '''
+@app.route("/")
+@app.route("/index")
+def main():
+    return '''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>НГТУ, ФБ, Лабораторные работы</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header>
+        НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных        
+        <hr>
+    </header>
+        <main>
+            <a href="/lab1">Первая лабораторная</a>
+        </main>
+    <footer>
+        <hr>
+        &copy; Писарев Максим Иванович, ФБИ-31, 3 курс, 2025
+    </footer>
+</body>
+</html>
+'''
