@@ -79,7 +79,40 @@ def created():
 ''', 201
 @app.errorhandler(404)
 def not_found(err):
-    return 'нет такой страницы',404
+    path = url_for("static",filename = '404.jpg')
+    return '''
+<!doctype html>
+<html>
+<style>
+    img{
+        width:500px;
+        height:500px;
+        position: relative;
+        top:90px;
+        left:450px;
+        box-shadow: 0px 5px 10px;
+        border-radius: 10%;
+    }
+    img:hover{
+        box-shadow: 12px 3px 52px 33px rgba(45, 139, 211, 0.2);
+    }
+    body{
+        background-color: #ecf7d7;
+        color: #6b7a4e;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 18pt;
+    }
+    div{
+        position:absolute;
+        left:675px;
+        top:35px;
+    }
+</style>
+    <body>
+        <div>Упс!</div>
+        <img src = "'''+path+'''">
+    </body>
+</html>''',404
 @app.route("/lab1/clear_counter")
 def clear_counter():
     global count
