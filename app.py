@@ -40,7 +40,11 @@ def image():
         <h1>Дуб</h1>
         <img src =" '''+ path +''' ">
     </body>
-</html>'''
+</html>''',{
+    'Content-Language':'ru',
+    'From':'maksim.pisarev.1986@mail.ru',
+    'Accept-Charset': 'utf-8'
+}
 count = 0
 @app.route("/lab1/counter")
 def counter():
