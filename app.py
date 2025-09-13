@@ -218,10 +218,3 @@ def teapot():
     </body>
 </html>
 ''',418
-@app.route("/works")
-def works():
-    global count
-    return count/0
-@app.errorhandler(500)
-def in_errors(err):
-    return '500. Внутренняя ошибка сервера.'
