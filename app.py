@@ -171,10 +171,29 @@ def lab1():
     веб-приложений, сознательно предоставляющих лишь самые базовые возможности.
     <hr>
     <a href = "/">*ссылка*</a>
+    <h2>Список роутов</h2>
+    <ul>
+        <li><a href = "/lab1/web">Создание первой страницы</a></li>
+        <li><a href = "/lab1/author">Информация об авторе</a></li>
+        <li><a href = "/lab1/image">Картинка</a></li>
+        <li><a href = "/lab1/counter">Счётчик</a></li>
+        <li><a href = "/lab1/info">Перенаправление на инфо об авторе</a></li>
+        <li><a href = "/lab1/created">Код ответа 201</a></li>
+        <li><a href = "/lab1/clear_counter">Очистка счётчика</a></li>
+        <li><a href = "/index">Основное меню лабораторных</a></li>
+        <li>Список ошибок<ul>
+            <li><a href = "/lab1/not_query">400</a></li>
+            <li><a href = "/lab1/non_auth">401</a></li>
+            <li><a href = "/lab1/no_rights">403</a></li>
+            <li><a href = "/lab1/no_methods">405</a></li>
+            <li><a href = "/lab1/teapot">418</a></li>
+        </ul></li>
+        <li><a href = "/lab1/works">Работа обработчика ошибки 500.</a></li>
+    </ul>
 </body>
 </html>
 '''
-@app.route("/not_query")
+@app.route("/lab1/not_query")
 def not_query():
     return '''
 <!doctype html>
@@ -184,7 +203,7 @@ def not_query():
     </body>
 </html>
 ''',400
-@app.route("/non_auth")
+@app.route("/lab1/non_auth")
 def non_auth():
     return '''
 <!doctype html>
@@ -194,7 +213,7 @@ def non_auth():
     </body>
 </html>''',401
 
-@app.route("/no_rights")
+@app.route("/lab1/no_rights")
 def no_rights():
     return '''
 <!doctype html>
@@ -203,7 +222,7 @@ def no_rights():
         403. Запрещено, нет прав
     </body>
 </html>''',403
-@app.route("/no_methods")
+@app.route("/lab1/no_methods")
 def no_methods():
     return '''
 <!doctype html>
@@ -212,7 +231,7 @@ def no_methods():
         405. Метод не поддерживается
     </body>
 </html>''',405
-@app.route("/teapot")
+@app.route("/lab1/teapot")
 def teapot():
     return '''
 <!doctype html>
@@ -222,7 +241,7 @@ def teapot():
     </body>
 </html>
 ''',418
-@app.route("/works")
+@app.route("/lab1/works")
 def works():
     global count
     return count/0
