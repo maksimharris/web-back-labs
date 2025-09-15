@@ -81,9 +81,20 @@ def created():
     </body>
 </html>
 ''', 201
+access_log = []
 @app.errorhandler(404)
 def not_found(err):
+    global count,access_log
+    count += 1
     path = url_for("static",filename = '404.jpg')
+    time = datetime.datetime.today()
+    url = request.url
+    client_ip = request.remote_addr
+    notes = f'[{str(time)} пользователь {str(client_ip)}] зашёл на адрес {str(url)}'
+    access_log.append(notes)
+    log_html = ''
+    for entry in reversed(access_log):
+        log_html += f'<li>{entry}</li>'
     return '''
 <!doctype html>
 <html>
@@ -92,7 +103,7 @@ def not_found(err):
         width:500px;
         height:500px;
         position: relative;
-        top:90px;
+        top:50px;
         left:450px;
         box-shadow: 0px 5px 10px;
         border-radius: 10%;
@@ -106,15 +117,28 @@ def not_found(err):
         font-family: 'Courier New', Courier, monospace;
         font-size: 18pt;
     }
-    div{
+    .oops{
         position:absolute;
         left:675px;
-        top:35px;
+        top:25px;
+    }
+    .journal{
+        position:absolute;
+        top:600px;
+        left:250px;
+        font-size:10pt;
+        width:1000px;
+        height:500px;
     }
 </style>
     <body>
-        <div>Упс!</div>
+        <div class = 'oops'>Упс!</div>
         <img src = "'''+path+'''">
+        <div class = 'journal'>
+            <h2>Журнал</h2>
+            <ul>'''+log_html+'''</ul>
+            <a href = "/lab1">Ссылка на корень сайта</a>
+        </div>
     </body>
 </html>''',404
 @app.route("/lab1/clear_counter")
