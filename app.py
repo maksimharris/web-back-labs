@@ -156,28 +156,9 @@ def clear_counter():
 @app.route("/")
 @app.route("/index")
 def main():
-    return '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>НГТУ, ФБ, Лабораторные работы</title>
-</head>
-<body>
-    <header>
-        НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных        
-        <hr>
-    </header>
-        <main>
-            <a href="/lab1">Первая лабораторная</a>
-        </main>
-    <footer>
-        <hr>
-        &copy; Писарев Максим Иванович, ФБИ-31, 3 курс, 2025
-    </footer>
-</body>
-</html>
-'''
+    return render_template('index.html')
+
+
 @app.route('/lab1')
 def lab1():
     return '''
@@ -387,3 +368,28 @@ def books():
         {'author': 'Айзек Азимов', 'title': 'Я, робот', 'genre': 'Научная фантастика', 'pages': 253}
     ]
     return render_template('books.html', books=books)
+@app.route('/lab2/cars')
+def berries_route():
+    cars = [
+        {'brand': 'Toyota', 'description': 'Надежный и экономичный семейный автомобиль','image':'Toyota.webp'},
+        {'brand': 'Ford', 'description': 'Мощный и практичный полноразмерный пикап','image':'Ford.webp'},
+        {'brand': 'BMW', 'description': 'Роскошный SUV с отличными ходовыми качествами','image':'BMW.webp'},
+        {'brand': 'Tesla', 'description': 'Инновационный электрокар с автопилотом','image':'Tesla.webp'},
+        {'brand': 'Mercedes-Benz', 'description': 'Премиальный бизнес-класс с богатой отделкой','image':'Mercedes.webp'},
+        {'brand': 'Audi', 'description': 'Стильный немецкий седан с полным приводом','image':'Audi.webp'},
+        {'brand': 'Honda', 'description': 'Компактный кроссовер с просторным салоном','image':'Honda.jpg'},
+        {'brand': 'Chevrolet', 'description': 'Легендарный американский маслкар','image':'Chevrolet.wepb'},
+        {'brand': 'Volkswagen', 'description': 'Культовый компактный хэтчбек','image':'Volkswagen.webp'},
+        {'brand': 'Porsche', 'description': 'Знаменитый спортивный автомобиль','image':'Porsche.webp'},
+        {'brand': 'Hyundai', 'description': 'Современный кроссовер с ярким дизайном','image':'Huyndai.webp'},
+        {'brand': 'Nissan', 'description': 'Популярный городской кроссовер','image':'Nissan.webp'},
+        {'brand': 'Kia', 'description': 'Стильный и технологичный SUV','image':'Kia.webp'},
+        {'brand': 'Lexus', 'description': 'Роскошный японский внедорожник','image':'Lexus.webp'},
+        {'brand': 'Subaru', 'description': 'Полноприводный универсал повышенной проходимости','image':'Subaru.webp'},
+        {'brand': 'Mazda', 'description': 'Элегантный кроссовер с отличной управляемостью','image':'Mazda.webp'},
+        {'brand': 'Volvo', 'description': 'Безопасный и комфортный семейный SUV','image':'Volvo.webp'},
+        {'brand': 'Jeep', 'description': 'Легендарный внедорожник для бездорожья','image':'Jeep.png'},
+        {'brand': 'Land Rover', 'description': 'Эталон роскошного внедорожника','image':'Land-Rover.png'},
+        {'brand': 'Ferrari', 'description': 'Эксклюзивный итальянский суперкар','image':'Ferrari.jpeg'}
+    ]
+    return render_template('cars.html', cars=cars)
