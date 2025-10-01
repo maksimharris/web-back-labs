@@ -1,17 +1,25 @@
-from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
+
+from flask import Flask, url_for, request, redirect, abort, render_template
+
 from lab1 import lab1
+
 from lab2 import lab2
+
+from lab3 import lab3
+
 app = Flask(__name__)
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
+app.register_blueprint(lab3)
 count = 0
 access_log = []
 @app.errorhandler(404)
+
 def not_found(err):
     global count,access_log
     count += 1
-    path = url_for("static",filename = '404.jpg')
+    path = url_for('static',filename = '404.jpg')
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr
@@ -69,6 +77,6 @@ def not_found(err):
 
 @app.route("/")
 @app.route("/index")
+
 def main():
     return render_template('index.html')
-
