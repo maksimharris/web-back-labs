@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block lab %}Калькулятор{% endblock %}
+{% block main %}
+<h1>Расчёты для {{ a }} и {{ b }}</h1>
+<p>{{ a }} + {{ b }} = {{ a + b }}</p>
+<p>{{ a }} - {{ b }} = {{ a - b }}</p>
+<p>{{ a }} * {{ b }} = {{ a * b }}</p>
+<p>{{ a }} / {{ b }} = {{ a / b }}</p>
+<p>{{ a }}  <sup>{{ b }}</sup> = {{ a ** b }}</p>
+{% endblock %}
