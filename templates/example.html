@@ -30,14 +30,13 @@
         {% else %}
             Анонимус,
         {% endif %}
-        Группа-
-        {% if group %}
+        ФБИ -{% if group %}
             {{ group }},
         {% else %}
             ??,
         {% endif %}
         {% if course %}
-            {{ course }},
+            {{ course }}
         {% else %}
             ??,
         {% endif %}
