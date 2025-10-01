@@ -378,10 +378,10 @@ def berries_route():
         {'brand': 'Mercedes-Benz', 'description': 'Премиальный бизнес-класс с богатой отделкой','image':'Mercedes.webp'},
         {'brand': 'Audi', 'description': 'Стильный немецкий седан с полным приводом','image':'Audi.webp'},
         {'brand': 'Honda', 'description': 'Компактный кроссовер с просторным салоном','image':'Honda.jpg'},
-        {'brand': 'Chevrolet', 'description': 'Легендарный американский маслкар','image':'Chevrolet.wepb'},
+        {'brand': 'Chevrolet', 'description': 'Легендарный американский маслкар','image':'Chevrolet.webp'},
         {'brand': 'Volkswagen', 'description': 'Культовый компактный хэтчбек','image':'Volkswagen.webp'},
         {'brand': 'Porsche', 'description': 'Знаменитый спортивный автомобиль','image':'Porsche.webp'},
-        {'brand': 'Hyundai', 'description': 'Современный кроссовер с ярким дизайном','image':'Huyndai.webp'},
+        {'brand': 'Hyundai', 'description': 'Современный кроссовер с ярким дизайном','image':'Hyundai.webp'},
         {'brand': 'Nissan', 'description': 'Популярный городской кроссовер','image':'Nissan.webp'},
         {'brand': 'Kia', 'description': 'Стильный и технологичный SUV','image':'Kia.webp'},
         {'brand': 'Lexus', 'description': 'Роскошный японский внедорожник','image':'Lexus.webp'},
@@ -390,6 +390,6 @@ def berries_route():
         {'brand': 'Volvo', 'description': 'Безопасный и комфортный семейный SUV','image':'Volvo.webp'},
         {'brand': 'Jeep', 'description': 'Легендарный внедорожник для бездорожья','image':'Jeep.png'},
         {'brand': 'Land Rover', 'description': 'Эталон роскошного внедорожника','image':'Land-Rover.png'},
-        {'brand': 'Ferrari', 'description': 'Эксклюзивный итальянский суперкар','image':'Ferrari.jpeg'}
+        {'brand': 'Ferrari', 'description': 'Эксклюзивный итальянский суперкар','image':'Ferrari.jpg'}
     ]
     return render_template('cars.html', cars=cars)
