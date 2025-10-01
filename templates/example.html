@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Писарев Максим Иванович. Лабораторные работы по WEB-программированию.</title>
+    <title>{% if name %}
+            {{ name }}
+        {% else %}
+            Анонимус
+        {% endif %}. Лабораторная работа {{ lab }}</title></title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}">
 </head>
 <body>
     <header>
-        WEB-программирование, часть 2. Лабораторная работа {{lab}}
+        WWEB-программирование, часть 2. {% if lab %}Лабораторная работа 2{% endif %}
         <hr>
     </header>
     <main>
@@ -20,7 +24,25 @@
     </main>
     <footer>
         <hr>
-        &copy; {{name}}, ФБИ-{{group}}, {{course}} курс, 2025
+                &copy;
+        {% if name %}
+            {{ name }},
+        {% else %}
+            Анонимус,
+        {% endif %}
+        Группа-
+        {% if group %}
+            {{ group }},
+        {% else %}
+            ??,
+        {% endif %}
+        {% if course %}
+            {{ course }},
+        {% else %}
+            ??,
+        {% endif %}
+        курс
+        2025
     </footer>
 </body>
 </html>
