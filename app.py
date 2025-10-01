@@ -372,3 +372,18 @@ def calc_default():
 @app.route('/lab2/calc/<int:a>')
 def calc_one(a):
     return redirect(f'/lab2/calc/{a}/1')
+@app.route('/lab2/books')
+def books():
+    books = [
+        {'author': 'Михаил Булгаков', 'title': 'Мастер и Маргарита', 'genre': 'Роман', 'pages': 480},
+        {'author': 'Антуан де Сент-Экзюпери', 'title': 'Маленький принц', 'genre': 'Притча', 'pages': 96},
+        {'author': 'Джоан Роулинг', 'title': 'Гарри Поттер и философский камень', 'genre': 'Фэнтези', 'pages': 399},
+        {'author': 'Артур Конан Дойл', 'title': 'Шерлок Холмс: Сборник рассказов', 'genre': 'Детектив', 'pages': 307},
+        {'author': 'Агата Кристи', 'title': 'Убийство в Восточном экспрессе', 'genre': 'Детектив', 'pages': 256},
+        {'author': 'Рэй Брэдбери', 'title': '451° по Фаренгейту', 'genre': 'Антиутопия', 'pages': 256},
+        {'author': 'Стивен Кинг', 'title': 'Оно', 'genre': 'Ужасы', 'pages': 1138},
+        {'author': 'Пауло Коэльо', 'title': 'Алхимик', 'genre': 'Роман', 'pages': 208},
+        {'author': 'Олдос Хаксли', 'title': 'О дивный новый мир', 'genre': 'Антиутопия', 'pages': 288},
+        {'author': 'Айзек Азимов', 'title': 'Я, робот', 'genre': 'Научная фантастика', 'pages': 253}
+    ]
+    return render_template('books.html', books=books)
