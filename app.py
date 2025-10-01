@@ -272,3 +272,11 @@ def works():
 @app.errorhandler(500)
 def in_errors(err):
     return '500. Внутренняя ошибка сервера.'
+
+@app.route('/lab2/a/')
+def a():
+    return 'ok'
+
+@app.route('/lab2/a')
+def a_mod():
+    return 'not ok'
