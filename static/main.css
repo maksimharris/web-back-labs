@@ -28,3 +28,15 @@ footer{
     right:0;
     left:0;
 }
+.errors-user{
+    background-color: red;
+    font-family: 'Courier New', Courier, monospace;
+    width: 500px;
+    height: 500px;
+}
+.errors-age{
+    background-color: red;
+    font-family: 'Courier New', Courier, monospace;
+    width: 500px;
+    height: 500px;
+}

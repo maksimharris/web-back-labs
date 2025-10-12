@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block lab %}Лабораторная работа 3{% endblock %}
 {% block main %}
-    {% if user %}
+    {% if user and age %}
     <h1>Привет, {{ user }}</h1>
     <div>ваш возраст: {{ age }}</div>
     <div>ваш пол: {{'мужской' if sex == 'male' else 'женский'}}</div>
@@ -12,17 +12,21 @@
     <form>
         <label>Ваше имя:</label>
         <div>
-            <input type = "text" placeholder="Как вас зовут?" name = "user">
+            <input type = "text" placeholder="Как вас зовут?" name = "user" value = "{{ user or '' }}">
+            <span class ='errors-user'>{{ errors.user }}</span>
+
         </div>
         <label>Ваш возраст:</label>
         <div>
-            <input type="number" name="age">
+            <input type="number" name="age" value = "{{ age or '' }}" min="1" max="120">
+            <span class='errors-age'>{{ errors.age }}</span>
+
         </div>
         <label>Ваш пол:</label>
         <div>
             <select name="sex">
-                <option value="male">Мужчина</option>
-                <option value="female">Женщина</option>
+                <option value="male" {{ sex == 'male' and 'selected' }}>Мужчина</option>
+                <option value="female" {{ sex == 'female' and 'selected' }}>Женщина</option>
             </select>
         </div>
         <div>
@@ -31,5 +35,5 @@
     </form>
     {% endif %}
 
-    
+
 {% endblock %}
