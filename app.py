@@ -78,5 +78,9 @@ def not_found(err):
 @app.route("/")
 @app.route("/index")
 
+
 def main():
     return render_template('index.html')
+@app.errorhandler(500)
+def in_errors(err):
+    return '500. Внутренняя ошибка сервера.'
