@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3{% endblock %}
+{% block main %}
+    <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Заказ напитка</h1>
+    
+    <form action="/lab3/pay" style="max-width: 500px; margin: 0 auto; background: #f8f9fa; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        
+        <!-- Напитки -->
+        <div style="font-size: 1.2em; font-weight: bold; color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">Напитки</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+            <label style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e9ecef;">
+                <input type="radio" value="coffee" name="drink" checked style="margin-right: 12px; transform: scale(1.2);">
+                <span style="font-size: 1.1em;">Кофе - <strong style="color: #e74c3c;">120 руб.</strong></span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e9ecef;">
+                <input type="radio" value="black-tea" name="drink" style="margin-right: 12px; transform: scale(1.2);">
+                <span style="font-size: 1.1em;">Чёрный чай - <strong style="color: #e74c3c;">80 руб.</strong></span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e9ecef;">
+                <input type="radio" value="green-tea" name="drink" style="margin-right: 12px; transform: scale(1.2);">
+                <span style="font-size: 1.1em;">Зелёный чай - <strong style="color: #e74c3c;">70 руб.</strong></span>
+            </label>
+        </div>
+
+        <!-- Добавки -->
+        <div style="font-size: 1.2em; font-weight: bold; color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">Добавки</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+            <label style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e9ecef;">
+                <input type="checkbox" name="milk" style="margin-right: 12px; transform: scale(1.2);">
+                <span style="font-size: 1.1em;">Молоко - <strong style="color: #e74c3c;">30 руб.</strong></span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 12px; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e9ecef;">
+                <input type="checkbox" name="sugar" style="margin-right: 12px; transform: scale(1.2);">
+                <span style="font-size: 1.1em;">Сахар - <strong style="color: #e74c3c;">10 руб.</strong></span>
+            </label>
+        </div>
+
+        <!-- Кнопка -->
+        <div style="text-align: center;">
+            <button type="submit" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; font-weight: bold;">
+                Заказать
+            </button>
+        </div>
+    </form>
+
+    <style>
+        label:hover {
+            border-color: #3498db !important;
+            background: #e3f2fd !important;
+            transform: translateY(-2px);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #2980b9, #1c6ea4) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        input[type="radio"]:checked + span,
+        input[type="checkbox"]:checked + span {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        label:has(input[type="radio"]:checked),
+        label:has(input[type="checkbox"]:checked) {
+            border-color: #27ae60 !important;
+            background: #e8f5e8 !important;
+        }
+    </style>
+{% endblock %}

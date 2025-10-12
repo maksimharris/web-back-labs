@@ -36,3 +36,26 @@ def form1():
                                             age=age,
                                             sex=sex,
                                             errors = errors)
+@lab3.route('/lab3/order')
+def order():
+    return render_template('/lab3/order.html')
+price = 0
+@lab3.route('/lab3/pay')
+def pay():
+    global price
+    drink = request.args.get('drink')
+    if drink == "coffee":
+        price = 120
+    elif drink == "black-tea":
+        price = 80
+    else:
+        price = 70
+    if request.args.get('milk') == "on":
+        price +=30
+    elif request.args.get('sugar') == "on":
+        price +=10
+    return render_template('/lab3/pay.html',price = price)
+@lab3.route('/lab3/success')
+def success():
+    global price
+    return render_template('/lab3/success.html',price = price)    

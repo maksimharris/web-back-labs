@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3{% endblock %}
+{% block main %}
+    <div style="max-width: 500px; margin: 50px auto; text-align: center; background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <!-- Иконка успеха -->
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #27ae60, #2ecc71); border-radius: 50%; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; animation: bounce 0.6s ease-in-out;">
+            <span style="color: white; font-size: 2.5em;">✓</span>
+        </div>
+
+        <h1 style="color: #27ae60; margin-bottom: 20px; font-size: 2.2em;">Оплата прошла успешно!</h1>
+        
+        <div style="font-size: 1.3em; color: #2c3e50; margin-bottom: 15px; line-height: 1.5;">
+            Спасибо, ваш заказ оплачен на сумму 
+            <strong style="color: #e74c3c; font-size: 1.4em;">{{ price }} рублей</strong>
+        </div>
+        
+        <div style="color: #7f8c8d; font-size: 1.1em; margin-bottom: 30px; line-height: 1.4;">
+            Ожидайте доставку... Ваш напиток уже готовится! ☕
+        </div>
+
+        <!-- Дополнительная информация -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3498db;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #7f8c8d;">Номер заказа:</span>
+                <span style="color: #2c3e50; font-weight: bold;">#{{ range(1000, 9999) | random }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #7f8c8d;">Примерное время доставки:</span>
+                <span style="color: #2c3e50; font-weight: bold;">15-20 минут</span>
+            </div>
+        </div>
+
+        <a href="/lab3/order" 
+           style="display: inline-block; background: linear-gradient(135deg, #3498db, #2980b9); color: white; text-decoration: none; padding: 15px 35px; font-size: 1.2em; border-radius: 25px; transition: all 0.3s ease; font-weight: bold; margin-top: 10px;">
+            🎉 Заказать ещё?
+        </a>
+
+        <!-- Дополнительные ссылки -->
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+            <a href="/" style="color: #7f8c8d; text-decoration: none; font-size: 0.9em; transition: color 0.3s ease;">
+                Вернуться на главную
+            </a>
+        </div>
+    </div>
+
+    <style>
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .success-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(39, 174, 96, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+            }
+        }
+    </style>
+
+    <!-- Добавляем анимацию пульсации для иконки -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const icon = document.querySelector('div[style*="background: linear-gradient(135deg, #27ae60, #2ecc71)"]');
+            icon.style.animation = 'bounce 0.6s ease-in-out, pulse 2s infinite 0.6s';
+        });
+    </script>
+{% endblock %}

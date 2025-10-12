@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3{% endblock %}
+{% block main %}
+    <div style="max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 10px;">Оплата</h1>
+        
+        <div style="text-align: center; font-size: 1.3em; color: #e74c3c; font-weight: bold; margin-bottom: 30px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+            Сумма к оплате: {{ price }} руб.
+        </div>
+
+        <form action="/lab3/success">
+            <!-- Номер карты -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 8px; font-size: 1.1em;">
+                    Номер банковской карты:
+                </label>
+                <input type="text" name="card" pattern="\d{16}" 
+                       placeholder="0000 0000 0000 0000"
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1.1em; transition: all 0.3s ease; box-sizing: border-box;">
+                <div style="font-size: 0.9em; color: #7f8c8d; margin-top: 5px;">16 цифр без пробелов</div>
+            </div>
+
+            <!-- Имя держателя -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 8px; font-size: 1.1em;">
+                    Имя держателя карты:
+                </label>
+                <input type="text" name="name" 
+                       placeholder="IVAN IVANOV"
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1.1em; transition: all 0.3s ease; text-transform: uppercase; box-sizing: border-box;">
+            </div>
+
+            <!-- CVV -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 8px; font-size: 1.1em;">
+                    CVV:
+                </label>
+                <input type="text" name="cvv" pattern="\d{3}" 
+                       placeholder="123"
+                       style="width: 120px; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1.1em; transition: all 0.3s ease; text-align: center; box-sizing: border-box;">
+                <div style="font-size: 0.9em; color: #7f8c8d; margin-top: 5px;">3 цифры на обороте карты</div>
+            </div>
+
+            <!-- Срок действия -->
+            <div style="margin-bottom: 30px;">
+                <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 8px; font-size: 1.1em;">
+                    Срок действия:
+                </label>
+                <div style="display: flex; gap: 10px; align-items: center; width: fit-content;">
+                    <input type="text" name="month" placeholder="ММ" maxlength="2" pattern="\d{2}"
+                           style="width: 70px; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; text-align: center; font-size: 1.1em; box-sizing: border-box;">
+                    <span style="font-size: 1.2em; color: #7f8c8d;">/</span>
+                    <input type="text" name="year" placeholder="ГГ" maxlength="2" pattern="\d{2}"
+                           style="width: 70px; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; text-align: center; font-size: 1.1em; box-sizing: border-box;">
+                </div>
+                <div style="font-size: 0.9em; color: #7f8c8d; margin-top: 5px;">ММ/ГГ</div>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button type="submit" 
+                        style="flex: 1; background: linear-gradient(135deg, #27ae60, #219a52); color: white; border: none; padding: 15px; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; font-weight: bold;">
+                    💳 Оплатить
+                </button>
+                <a href="/lab3/order" 
+                   style="flex: 1; background: #95a5a6; color: white; text-decoration: none; padding: 15px; text-align: center; font-size: 1.2em; border-radius: 10px; transition: all 0.3s ease; font-weight: bold;">
+                    ❌ Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        input:focus {
+            outline: none;
+            border-color: #3498db !important;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #219a52, #1e8449) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        a:hover {
+            background: #7f8c8d !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(149, 165, 166, 0.3);
+        }
+    </style>
+{% endblock %}
