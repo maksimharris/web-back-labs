@@ -58,4 +58,33 @@ def pay():
 @lab3.route('/lab3/success')
 def success():
     global price
-    return render_template('/lab3/success.html',price = price)    
+    return render_template('/lab3/success.html',price = price)
+@lab3.route('/lab3/settings')
+def settings():
+    color = request.args.get('color')
+    b_color = request.args.get('background-color')
+    f_size = request.args.get('font-size')
+    border_style = request.args.get('border-style')
+    
+    if color or b_color or f_size or border_style:
+        resp = make_response(redirect('/lab3/settings'))
+        if color:
+            resp.set_cookie('color', color)
+        if b_color:
+            resp.set_cookie('background-color', b_color)
+        if f_size:
+            resp.set_cookie('font-size', f_size)
+        if border_style:
+            resp.set_cookie('border-style', border_style)  # Сохраняем выбранное значение
+        return resp
+    
+    color = request.cookies.get('color')
+    b_color = request.cookies.get('background-color')
+    f_size = request.cookies.get('font-size')
+    border_style = request.cookies.get('border-style')  # Получаем для отображения в форме
+    
+    return render_template('/lab3/settings.html', 
+                          color=color, 
+                          b_color=b_color, 
+                          f_size=f_size, 
+                          border_style = border_style)

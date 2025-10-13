@@ -1,0 +1,31 @@
+6{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3{% endblock %}
+{% block main %}
+    <h1>Cookies</h1>
+    <form action="">
+        <div>
+            <label for="color">Выберите цвет текста: </label>
+            <input type="color" name="color" id="color" value = "{{ color or '' }}">
+        </div>
+         <div>
+            <label for="background-color">Выберите цвет фона: </label>
+            <input type="color" name="background-color" id="background-color" value = "{{ b_color or '' }}">
+        </div>
+        <div>
+            <label for="font-size">Выберите размер шрифта: </label>
+            <input type="number" name="font-size" id="font-size" value = "{{ f_size or '' }}" min = '8' max ='50' step="2">
+        </div>
+       <div >
+                <label for = "border-style">🟦 Стиль границ:</label>
+                <select name="border-style" >
+                    <option value="none" {{ 'selected' if border_style == 'none' }}>Без границ</option>
+                    <option value="solid" {{ 'selected' if border_style == 'solid' }}>Сплошная линия</option>
+                    <option value="dashed" {{ 'selected' if border_style == 'dashed' }}>Пунктирная</option>
+                    <option value="dotted" {{ 'selected' if border_style == 'dotted' }}>Точечная</option>
+                    <option value="double" {{ 'selected' if border_style == 'double' }}>Двойная</option>
+                </select>
+            </div>
+            <button type = "submit">ОК</button>
+        </div>
+    </form>
+{% endblock %}
