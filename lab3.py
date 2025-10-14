@@ -22,11 +22,17 @@ def cookies():
 def del_cookies():
     resp = make_response(redirect('/lab3'))
     resp.delete_cookie('name')
+    
     resp.delete_cookie('age')
+
     resp.delete_cookie('name_color')
+
     resp.delete_cookie('color')
+
     resp.delete_cookie('background-color')
+
     resp.delete_cookie('font-size')
+
     resp.delete_cookie('border-style')
     return resp
 @lab3.route('/lab3/form1')
