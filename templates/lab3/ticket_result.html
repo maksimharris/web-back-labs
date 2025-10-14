@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3 - Железнодорожный билет{% endblock %}
+{% block main %}
+    <div style="max-width: 500px; margin: 0 auto; background: white; border: 2px solid #333; border-radius: 10px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div style="text-align: center; border-bottom: 2px dashed #333; padding-bottom: 20px; margin-bottom: 20px;">
+            <h1 style="color: #2c3e50; margin: 0;">🚂 ЖЕЛЕЗНОДОРОЖНЫЙ БИЛЕТ</h1>
+            <div style="color: #e74c3c; font-weight: bold; font-size: 1.2em; margin-top: 10px;">{{ ticket_type }}</div>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: bold;">Пассажир:</span>
+                <span>{{ fio }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: bold;">Возраст:</span>
+                <span>{{ age }} лет</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: bold;">Маршрут:</span>
+                <span>{{ departure }} → {{ destination }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="font-weight: bold;">Дата:</span>
+                <span>{{ date }}</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <div style="font-weight: bold; margin-bottom: 10px;">Услуги:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>Полка: 
+                    {% if shelf == 'lower' %}Нижняя
+                    {% elif shelf == 'upper' %}Верхняя
+                    {% elif shelf == 'upper-side' %}Верхняя боковая
+                    {% else %}Нижняя боковая{% endif %}
+                </div>
+                <div>Бельё: {{ 'Да' if linen == 'yes' else 'Нет' }}</div>
+                <div>Багаж: {{ 'Да' if baggage == 'yes' else 'Нет' }}</div>
+                <div>Страховка: {{ 'Да' if insurance == 'yes' else 'Нет' }}</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; border-top: 2px dashed #333; padding-top: 20px;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #e74c3c;">
+                💰 Стоимость: {{ total_price }} руб.
+            </div>
+            <div style="margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
+                Билет действителен при предъявлении документа, удостоверяющего личность
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/lab3/ticket" style="display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
+                🎫 Оформить новый билет
+            </a>
+        </div>
+    </div>
+{% endblock %}

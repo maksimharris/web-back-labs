@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 3 - Железнодорожный билет{% endblock %}
+{% block main %}
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h1>🎫 Заказ железнодорожного билета</h1>
+        
+        <form>
+            <!-- ФИО -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">ФИО пассажира:</label>
+                <input type="text" name="fio" value="{{ fio }}" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                       placeholder="Иванов Иван Иванович">
+                {% if errors.fio %}
+                <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.fio }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Полка -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 10px;">Тип полки:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <label style="display: flex; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">
+                        <input type="radio" name="shelf" value="lower" {{ 'checked' if shelf == 'lower' }}>
+                        <span style="margin-left: 8px;">🛏️ Нижняя</span>
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">
+                        <input type="radio" name="shelf" value="upper" {{ 'checked' if shelf == 'upper' }}>
+                        <span style="margin-left: 8px;">🛏️ Верхняя</span>
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">
+                        <input type="radio" name="shelf" value="upper-side" {{ 'checked' if shelf == 'upper-side' }}>
+                        <span style="margin-left: 8px;">🛏️ Верхняя боковая</span>
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">
+                        <input type="radio" name="shelf" value="lower-side" {{ 'checked' if shelf == 'lower-side' }}>
+                        <span style="margin-left: 8px;">🛏️ Нижняя боковая</span>
+                    </label>
+                </div>
+                {% if errors.shelf %}
+                <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.shelf }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Бельё и багаж -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 10px;">🍃 Бельё:</label>
+                    <div>
+                        <label style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <input type="radio" name="linen" value="yes" {{ 'checked' if linen == 'yes' }}>
+                            <span style="margin-left: 8px;">Да (+75 руб.)</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="linen" value="no" {{ 'checked' if linen == 'no' }}>
+                            <span style="margin-left: 8px;">Нет</span>
+                        </label>
+                    </div>
+                    {% if errors.linen %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.linen }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 10px;">🎒 Багаж:</label>
+                    <div>
+                        <label style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <input type="radio" name="baggage" value="yes" {{ 'checked' if baggage == 'yes' }}>
+                            <span style="margin-left: 8px;">Да (+250 руб.)</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="baggage" value="no" {{ 'checked' if baggage == 'no' }}>
+                            <span style="margin-left: 8px;">Нет</span>
+                        </label>
+                    </div>
+                    {% if errors.baggage %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.baggage }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Возраст -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">👤 Возраст:</label>
+                <input type="number" name="age" value="{{ age }}" min="1" max="120"
+                       style="width: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                {% if errors.age %}
+                <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.age }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Маршрут -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">📍 Пункт выезда:</label>
+                    <input type="text" name="departure" value="{{ departure }}"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                           placeholder="Москва">
+                    {% if errors.departure %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.departure }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">🎯 Пункт назначения:</label>
+                    <input type="text" name="destination" value="{{ destination }}"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                           placeholder="Санкт-Петербург">
+                    {% if errors.destination %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.destination }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Дата и страховка -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">📅 Дата поездки:</label>
+                    <input type="date" name="date" value="{{ date }}"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    {% if errors.date %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.date }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 10px;">🛡️ Страховка:</label>
+                    <div>
+                        <label style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <input type="radio" name="insurance" value="yes" {{ 'checked' if insurance == 'yes' }}>
+                            <span style="margin-left: 8px;">Да (+150 руб.)</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="insurance" value="no" {{ 'checked' if insurance == 'no' }}>
+                            <span style="margin-left: 8px;">Нет</span>
+                        </label>
+                    </div>
+                    {% if errors.insurance %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">{{ errors.insurance }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+                🎫 Оформить билет
+            </button>
+        </form>
+    </div>
+{% endblock %}
