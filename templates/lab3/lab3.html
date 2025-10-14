@@ -10,7 +10,10 @@
         Привет, <span style = "color: {% if name %}
         {{ name_color }}
         {% else %}
-        black {% endif %}">{{name}}!</span>
+        black {% endif %}">{{name or 'Неизвестный'}}!</span>
+    </div>
+    <div>
+        Ваш возраст:<span>{{ age or '?'}}</span>
     </div>
     <div>Список сделанных страниц: </div>
     <ol>

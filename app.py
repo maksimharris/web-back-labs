@@ -19,7 +19,7 @@ access_log = []
 def not_found(err):
     global count,access_log
     count += 1
-    path = url_for('static',filename = '404.jpg')
+    path = url_for('static',filename = 'lab1/404.jpg')
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr

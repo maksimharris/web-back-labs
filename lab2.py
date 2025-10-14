@@ -80,10 +80,10 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'Mангo', 'price': 321}
     ]
-    return render_template('example.html',name=name,lab=lab,group=group,course=course,fruits=fruits)
+    return render_template('lab2/example.html',name=name,lab=lab,group=group,course=course,fruits=fruits)
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 @lab2.route('/lab2/filters')
 def filters():
@@ -91,7 +91,7 @@ def filters():
     return render_template('filter.html', phrase = phrase)
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
 def calc(a, b):
-    return render_template('calc.html', a=a, b=b)
+    return render_template('lab2/calc.html', a=a, b=b)
 
 @lab2.route('/lab2/calc/')
 def calc_default():
@@ -114,29 +114,29 @@ def books():
         {'author': 'Олдос Хаксли', 'title': 'О дивный новый мир', 'genre': 'Антиутопия', 'pages': 288},
         {'author': 'Айзек Азимов', 'title': 'Я, робот', 'genre': 'Научная фантастика', 'pages': 253}
     ]
-    return render_template('books.html', books=books)
+    return render_template('/lab2/books.html', books=books)
 @lab2.route('/lab2/cars')
 def berries_route():
     cars = [
-        {'brand': 'Toyota', 'description': 'Надежный и экономичный семейный автомобиль','image':'Toyota.webp'},
-        {'brand': 'Ford', 'description': 'Мощный и практичный полноразмерный пикап','image':'Ford.webp'},
-        {'brand': 'BMW', 'description': 'Роскошный SUV с отличными ходовыми качествами','image':'BMW.webp'},
-        {'brand': 'Tesla', 'description': 'Инновационный электрокар с автопилотом','image':'Tesla.webp'},
-        {'brand': 'Mercedes-Benz', 'description': 'Премиальный бизнес-класс с богатой отделкой','image':'Mercedes.webp'},
-        {'brand': 'Audi', 'description': 'Стильный немецкий седан с полным приводом','image':'Audi.webp'},
-        {'brand': 'Honda', 'description': 'Компактный кроссовер с просторным салоном','image':'Honda.jpg'},
-        {'brand': 'Chevrolet', 'description': 'Легендарный американский маслкар','image':'Chevrolet.webp'},
-        {'brand': 'Volkswagen', 'description': 'Культовый компактный хэтчбек','image':'Volkswagen.webp'},
-        {'brand': 'Porsche', 'description': 'Знаменитый спортивный автомобиль','image':'Porsche.webp'},
-        {'brand': 'Hyundai', 'description': 'Современный кроссовер с ярким дизайном','image':'Hyundai.webp'},
-        {'brand': 'Nissan', 'description': 'Популярный городской кроссовер','image':'Nissan.webp'},
-        {'brand': 'Kia', 'description': 'Стильный и технологичный SUV','image':'Kia.webp'},
-        {'brand': 'Lexus', 'description': 'Роскошный японский внедорожник','image':'Lexus.webp'},
-        {'brand': 'Subaru', 'description': 'Полноприводный универсал повышенной проходимости','image':'Subaru.webp'},
-        {'brand': 'Mazda', 'description': 'Элегантный кроссовер с отличной управляемостью','image':'Mazda.webp'},
-        {'brand': 'Volvo', 'description': 'Безопасный и комфортный семейный SUV','image':'Volvo.webp'},
-        {'brand': 'Jeep', 'description': 'Легендарный внедорожник для бездорожья','image':'Jeep.png'},
-        {'brand': 'Land Rover', 'description': 'Эталон роскошного внедорожника','image':'Land-Rover.png'},
-        {'brand': 'Ferrari', 'description': 'Эксклюзивный итальянский суперкар','image':'Ferrari.jpg'}
+        {'brand': 'Toyota', 'description': 'Надежный и экономичный семейный автомобиль','image':'lab2/Toyota.webp'},
+        {'brand': 'Ford', 'description': 'Мощный и практичный полноразмерный пикап','image':'lab2/Ford.webp'},
+        {'brand': 'BMW', 'description': 'Роскошный SUV с отличными ходовыми качествами','image':'lab2/BMW.webp'},
+        {'brand': 'Tesla', 'description': 'Инновационный электрокар с автопилотом','image':'lab2/Tesla.webp'},
+        {'brand': 'Mercedes-Benz', 'description': 'Премиальный бизнес-класс с богатой отделкой','image':'lab2/Mercedes.webp'},
+        {'brand': 'Audi', 'description': 'Стильный немецкий седан с полным приводом','image':'lab2/Audi.webp'},
+        {'brand': 'Honda', 'description': 'Компактный кроссовер с просторным салоном','image':'lab2/Honda.jpg'},
+        {'brand': 'Chevrolet', 'description': 'Легендарный американский маслкар','image':'lab2/Chevrolet.webp'},
+        {'brand': 'Volkswagen', 'description': 'Культовый компактный хэтчбек','image':'lab2/Volkswagen.webp'},
+        {'brand': 'Porsche', 'description': 'Знаменитый спортивный автомобиль','image':'lab2/Porsche.webp'},
+        {'brand': 'Hyundai', 'description': 'Современный кроссовер с ярким дизайном','image':'lab2/Hyundai.webp'},
+        {'brand': 'Nissan', 'description': 'Популярный городской кроссовер','image':'lab2/Nissan.webp'},
+        {'brand': 'Kia', 'description': 'Стильный и технологичный SUV','image':'lab2/Kia.webp'},
+        {'brand': 'Lexus', 'description': 'Роскошный японский внедорожник','image':'lab2/Lexus.webp'},
+        {'brand': 'Subaru', 'description': 'Полноприводный универсал повышенной проходимости','image':'lab2/Subaru.webp'},
+        {'brand': 'Mazda', 'description': 'Элегантный кроссовер с отличной управляемостью','image':'lab2/Mazda.webp'},
+        {'brand': 'Volvo', 'description': 'Безопасный и комфортный семейный SUV','image':'lab2/Volvo.webp'},
+        {'brand': 'Jeep', 'description': 'Легендарный внедорожник для бездорожья','image':'lab2/Jeep.png'},
+        {'brand': 'Land Rover', 'description': 'Эталон роскошного внедорожника','image':'lab2/Land-Rover.png'},
+        {'brand': 'Ferrari', 'description': 'Эксклюзивный итальянский суперкар','image':'lab2/Ferrari.jpg'}
     ]
-    return render_template('cars.html', cars=cars)
+    return render_template('/lab2/cars.html', cars=cars)
