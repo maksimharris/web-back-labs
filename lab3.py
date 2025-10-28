@@ -3,7 +3,6 @@ from flask import Blueprint, request, render_template, make_response,redirect
 lab3  = Blueprint('lab3',__name__)
 
 @lab3.route('/lab3')
-
 def lab():
     
     name = request.cookies.get('name')
@@ -235,12 +234,7 @@ def products_search():
         max_price_input = request.cookies.get('max_price')
     
     # Инициализируем переменные
-    min_price = None
-    max_price = None
-    filtered_products = products
-    search_performed = False
-    
-    # Обработка введенных цен
+
     if min_price_input or max_price_input:
         search_performed = True
         

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 4{% endblock %}
+
+{% block main %}
+    <h1>Умножение чисел</h1>
+    {{ x1 }} * {{ x2 }} = {{ result }}
+    <br>
+    <a href="/lab4/mp-form">Ввести заново</a>
+    <br>
+{% endblock %}

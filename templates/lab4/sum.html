@@ -4,11 +4,8 @@
 
 {% block main %}
     <h1>Деление чисел</h1>
-    {% if error %}
-        {{ error }}
-    {% else %}
-    {{ x1 }} / {{ x2 }} = {{ result }}
-    {% endif %}<br>
-    <a href="/lab4/div-form">Ввести заново</a>
+    {{ x1 }} + {{ x2 }} = {{ result }}
+    <br>
+    <a href="/lab4/sum-form">Ввести заново</a>
     <br>
 {% endblock %}
