@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 4{% endblock %}
+
+{% block main %}
+    <h1>Заказ зерна</h1>
+    
+    <form method="post">
+        <div>
+            <label for="grain_type">Выберите зерно:</label>
+            <select id="grain_type" name="grain_type">
+                <option value="ячмень" {{ 'selected' if grain_type == 'ячмень' }}>Ячмень - 12 000 руб/т</option>
+                <option value="овёс" {{ 'selected' if grain_type == 'овёс' }}>Овёс - 8 500 руб/т</option>
+                <option value="пшеница" {{ 'selected' if grain_type == 'пшеница' }}>Пшеница - 9 000 руб/т</option>
+                <option value="рожь" {{ 'selected' if grain_type == 'рожь' }}>Рожь - 15 000 руб/т</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="weight">Вес (тонны):</label>
+            <input type="number" id="weight" name="weight" 
+                   value="{{ weight }}" 
+                   step="0.1" min="0.1"
+                   placeholder="Введите вес">
+        </div>
+        
+        <div>
+            <button type="submit">Оформить заказ</button>
+            <button type="reset">Очистить</button>
+        </div>
+    </form>
+
+    {% if error %}
+        <div style="color: red; font-weight: bold; margin: 15px 0; padding: 10px; 
+                   background-color: #ffe6e6; border: 1px solid red; border-radius: 5px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if message %}
+        <div style="color: green; font-weight: bold; margin: 15px 0; padding: 10px; 
+                   background-color: #e6ffe6; border: 1px solid green; border-radius: 5px;">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="/lab4">Вернуться к лабораторной работе 4</a>
+    </div>
+{% endblock %}

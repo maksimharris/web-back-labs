@@ -195,3 +195,57 @@ def fridge():
                          message=message,
                          snowflakes=snowflakes,
                          error=error)
+@lab4.route('/lab4/grain_order', methods=['GET', 'POST'])
+def grain_order():
+    grain_type = ''
+    weight = ''
+    message = ''
+    error = ''
+    total_price = 0
+    discount = 0
+    final_price = 0
+    
+    # Цены на зерно
+    prices = {
+        'ячмень': 12000,
+        'овёс': 8500,
+        'пшеница': 9000,
+        'рожь': 15000
+    }
+    
+    if request.method == 'POST':
+        grain_type = request.form.get('grain_type')
+        weight_str = request.form.get('weight')
+        
+        # Проверка на пустой вес
+        if not weight_str:
+            error = 'Ошибка: не указан вес заказа'
+        else:
+            try:
+                weight = float(weight_str)
+                
+                # Проверка веса на положительное значение
+                if weight <= 0:
+                    error = 'Ошибка: вес должен быть положительным числом'
+                elif weight > 100:
+                    error = 'Извините, такого объёма сейчас нет в наличии'
+                elif weight > 10:
+                    # Расчет скидки 10% для заказов более 10 тонн
+                    base_price = prices.get(grain_type, 0) * weight
+                    discount = base_price * 0.1
+                    final_price = base_price - discount
+                    message = f'Заказ успешно сформирован. Вы заказали {grain_type}. Вес: {weight} т. Сумма к оплате: {final_price:,.0f} руб. Применена скидка за большой объём 10% ({discount:,.0f} руб).'
+                else:
+                    # Расчет без скидки
+                    final_price = prices.get(grain_type, 0) * weight
+                    message = f'Заказ успешно сформирован. Вы заказали {grain_type}. Вес: {weight} т. Сумма к оплате: {final_price:,.0f} руб.'
+                    
+            except ValueError:
+                error = 'Ошибка: введите корректное число для веса'
+    
+    return render_template('/lab4/grain_order.html',
+                         grain_type=grain_type,
+                         weight=weight,
+                         message=message,
+                         error=error,
+                         prices=prices)
