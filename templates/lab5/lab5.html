@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+{% block main %}
+    <style>
+        .hrefs{
+            background-color: aliceblue;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            margin: 10px;
+            text-decoration: none;
+            color: black;
+        }
+        .hrefs:hover{
+            box-shadow: 1px 1px 4px;
+        }
+    </style>
+    <h1>База знаний:</h1>
+    <div style="display: block; text-align:center; background-color:blanchedalmond; padding: 20px">
+        <a href="/lab5/login" class = 'hrefs'>Вход</a>
+        <a href="/lab5/register"class = 'hrefs'>Регистрация</a>
+        <a href="/lab5/list" class = 'hrefs'>Список статей</a>
+        <a href="/lab5/create"class = 'hrefs'>Создать статью</a>
+        <span style ="position:relative; left: 350px">{{ user or 'Anonymous' }}</span>
+    </div>
+{% endblock %}
