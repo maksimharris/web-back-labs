@@ -95,19 +95,24 @@ def tree():
 # Список пользователей с дополнительной информацией
 users = {
     'alex': {
-        'password': '12345',
+        'password': '123',
         'name': 'Александр Петров',
         'gender': 'Мужской'
     },
-    'maria': {
-        'password': 'qwerty',
-        'name': 'Мария Иванова', 
+    'bob': {
+        'password': '555',
+        'name': 'Боб Мёрфи', 
         'gender': 'Женский'
     },
-    'john9977': {
-        'password': 'password',
-        'name': 'John Smith',
+    'max': {
+        'password': '473',
+        'name': 'Макс Писарев',
         'gender': 'Мужской'
+    },
+    'roma':{
+        'password': '163',
+        'name': 'Рима Горкунова',
+        'gender': 'Женский'
     }
 }
 
@@ -150,3 +155,43 @@ def welcome():
 def logout():
     session.pop('login', None)
     return redirect('/lab4/login')
+@lab4.route('/lab4/fridge', methods=['GET', 'POST'])
+def fridge():
+    temperature = None
+    message = ''
+    snowflakes = 0
+    error = ''
+    
+    if request.method == 'POST':
+        temp_str = request.form.get('temperature')
+        
+        # Проверка на пустое значение
+        if not temp_str:
+            error = 'Ошибка: не задана температура'
+        else:
+            try:
+                temperature = int(temp_str)
+                
+                # Проверка диапазонов температуры
+                if temperature < -12:
+                    error = 'Не удалось установить температуру — слишком низкое значение'
+                elif temperature > -1:
+                    error = 'Не удалось установить температуру — слишком высокое значение'
+                elif -12 <= temperature <= -9:
+                    message = f'Установлена температура: {temperature}°C'
+                    snowflakes = 3
+                elif -8 <= temperature <= -5:
+                    message = f'Установлена температура: {temperature}°C'
+                    snowflakes = 2
+                elif -4 <= temperature <= -1:
+                    message = f'Установлена температура: {temperature}°C'
+                    snowflakes = 1
+                    
+            except ValueError:
+                error = 'Ошибка: введите целое число'
+    
+    return render_template('/lab4/fridge.html', 
+                         temperature=temperature,
+                         message=message,
+                         snowflakes=snowflakes,
+                         error=error)
