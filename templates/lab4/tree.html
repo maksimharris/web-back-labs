@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block lab %}Нравится/не нравится{% endblock %}
+
+{% block main %}
+    <div>
+        Посажено деревьев: {{ tree_count }}
+    </div>
+    <form method="post">
+        {% if tree_count == 10 %}
+        <button name ="operation" value = "plant" disabled>Посадить дерево</button>
+        {% else %}
+        <button name ="operation" value = "plant" >Посадить дерево</button>
+        {% endif %}
+
+        {% if tree_count == 0 %} 
+        <button name = "operation" value = "cut" disabled>Срубить дерево</button>
+        {% else %}
+        <button name = "operation" value = "cut" >Срубить дерево</button>
+        {% endif %}
+    </form>
+{% endblock %}
