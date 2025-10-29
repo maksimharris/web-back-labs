@@ -118,29 +118,26 @@ users = {
 
 @lab4.route('/lab4/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    login_value = ""  # Для сохранения введенного логина
+    error = ''
+    login_value = ""
     
     if request.method == 'POST':
         login_value = request.form.get('login', '')
         password = request.form.get('password', '')
         
-        # Проверка на пустые значения
         if not login_value:
             error = 'Не введён логин'
         elif not password:
             error = 'Не введён пароль'
         else:
-            # Проверка существования пользователя и пароля
             if login_value in users and users[login_value]['password'] == password:
-                # Успешная авторизация
                 session['login'] = login_value
                 session['user_name'] = users[login_value]['name']
                 return redirect('/lab4/welcome')
             else:
                 error = 'Неверный логин или пароль'
     
-    return render_template('login.html', error=error, login_value=login_value)
+    return render_template('/lab4/login.html', error=error, login_value=login_value, authorized=False)
 @lab4.route('/lab4/welcome')
 def welcome():
     if 'login' in session:
@@ -150,7 +147,7 @@ def welcome():
         authorized = False
         user_name = ""
     
-    return render_template('welcome.html', authorized=authorized, user_name=user_name)
+    return render_template('/lab4/welcome.html', authorized=authorized, user_name=user_name)
 @lab4.route('/lab4/logout', methods = ['POST'])
 def logout():
     session.pop('login', None)
@@ -249,3 +246,130 @@ def grain_order():
                          message=message,
                          error=error,
                          prices=prices)
+def require_auth():
+    """Проверка авторизации"""
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    error = ''
+    success = ''
+    login_value = ''
+    name_value = ''
+    
+    if request.method == 'POST':
+        login_value = request.form.get('login', '').strip()
+        name_value = request.form.get('name', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Валидация
+        if not login_value:
+            error = 'Не введён логин'
+        elif not name_value:
+            error = 'Не введено имя'
+        elif not password:
+            error = 'Не введён пароль'
+        elif not confirm_password:
+            error = 'Не введено подтверждение пароля'
+        elif password != confirm_password:
+            error = 'Пароли не совпадают'
+        elif login_value in users:
+            error = 'Пользователь с таким логином уже существует'
+        else:
+            # Регистрация нового пользователя
+            users[login_value] = {
+                'password': password,
+                'name': name_value,
+                'gender': request.form.get('gender', 'Не указан')
+            }
+            success = 'Регистрация прошла успешно! Теперь вы можете войти.'
+            login_value = ''
+            name_value = ''
+    
+    return render_template('/lab4/register.html', 
+                         error=error, 
+                         success=success,
+                         login_value=login_value,
+                         name_value=name_value)
+
+@lab4.route('/lab4/users')
+def users_list():
+    # Проверка авторизации
+    auth_check = require_auth()
+    if auth_check:
+        return auth_check
+    
+    return render_template('/lab4/users.html', 
+                         users=users, 
+                         current_user=session.get('login'))
+
+@lab4.route('/lab4/delete_user', methods=['POST'])
+def delete_user():
+    # Проверка авторизации
+    auth_check = require_auth()
+    if auth_check:
+        return auth_check
+    
+    current_user = session.get('login')
+    if current_user in users:
+        del users[current_user]
+        session.clear()
+        return redirect('/lab4/login')
+    
+    return redirect('/lab4/users')
+
+@lab4.route('/lab4/edit_user', methods=['GET', 'POST'])
+def edit_user():
+    # Проверка авторизации
+    auth_check = require_auth()
+    if auth_check:
+        return auth_check
+    
+    current_user = session.get('login')
+    error = ''
+    success = ''
+    
+    if request.method == 'POST':
+        new_login = request.form.get('login', '').strip()
+        new_name = request.form.get('name', '').strip()
+        new_password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Валидация
+        if not new_login:
+            error = 'Не введён логин'
+        elif not new_name:
+            error = 'Не введено имя'
+        elif new_password and new_password != confirm_password:
+            error = 'Пароли не совпадают'
+        elif new_login != current_user and new_login in users:
+            error = 'Пользователь с таким логином уже существует'
+        else:
+            # Обновление данных пользователя
+            if new_login != current_user:
+                # Если логин изменился, создаем новую запись и удаляем старую
+                users[new_login] = users.pop(current_user)
+                session['login'] = new_login
+            
+            # Обновление остальных данных
+            users[new_login]['name'] = new_name
+            if new_password:
+                users[new_login]['password'] = new_password
+            users[new_login]['gender'] = request.form.get('gender', 'Не указан')
+            
+            session['user_name'] = new_name
+            success = 'Данные успешно обновлены!'
+    
+    # Получение текущих данных пользователя
+    user_data = users.get(current_user, {})
+    
+    return render_template('/lab4/edit_user.html',
+                         error=error,
+                         success=success,
+                         login_value=current_user,
+                         name_value=user_data.get('name', ''),
+                         gender_value=user_data.get('gender', ''))
+
+# Обновленный login для использования session['user_name']

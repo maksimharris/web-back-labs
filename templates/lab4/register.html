@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 4{% endblock %}
+
+{% block main %}
+    <h1>Регистрация</h1>
+    
+    {% if success %}
+        <div style="color: green; font-weight: bold; margin: 15px 0; padding: 10px; 
+                   background-color: #e6ffe6; border: 1px solid green; border-radius: 5px;">
+            {{ success }}
+            <div><a href="/lab4/login">Войти</a></div>
+        </div>
+    {% else %}
+        <form method="post">
+            <div>
+                <label for="login">Логин:</label>
+                <input type="text" id="login" name="login" value="{{ login_value }}" required>
+            </div>
+            
+            <div>
+                <label for="name">Имя:</label>
+                <input type="text" id="name" name="name" value="{{ name_value }}" required>
+            </div>
+            
+            <div>
+                <label for="gender">Пол:</label>
+                <select id="gender" name="gender">
+                    <option value="Не указан">Не указан</option>
+                    <option value="Мужской">Мужской</option>
+                    <option value="Женский">Женский</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div>
+                <label for="confirm_password">Подтверждение пароля:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            {% if error %}
+                <div style="color: red; font-weight: bold; margin: 15px 0; padding: 10px; 
+                           background-color: #ffe6e6; border: 1px solid red; border-radius: 5px;">
+                    {{ error }}
+                </div>
+            {% endif %}
+            
+            <div>
+                <button type="submit">Зарегистрироваться</button>
+                <button type="reset">Очистить</button>
+            </div>
+        </form>
+        
+        <div style="margin-top: 20px;">
+            <a href="/lab4/login">Уже есть аккаунт? Войти</a>
+        </div>
+    {% endif %}
+{% endblock %}
