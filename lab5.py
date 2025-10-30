@@ -74,4 +74,17 @@ def create():
     cur.execute(f"INSERT INTO articles(user_id,title,article_text) VALUES ({login_id},'{title}','{article_text}');")
     db_close(conn,cur)
     return redirect('/lab5')
-    #если адрес запрашивается методом POST, то, значит, пользователь уже заполнил все поля и послал нам статью — вставляем полученные данные в базу."
+@lab5.route('/lab5/list', methods = ['GET','POST'])
+def lists():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login') #перенаправление на вход в базу, если пользователь неидентифицирован
+    conn, cur  = db_connect()
+    cur.execute(f"SELECT * FROM users WHERE login = '{login}';")
+    login_id = cur.fetchone()["id"]
+
+    cur.execute(f"SELECT * FROM articles WHERE user_id = '{login_id}';") #показ только статей пользователя
+    articles = cur.fetchall()
+
+    db_close(conn,cur)
+    return render_template('/lab5/list.html', articles = articles)

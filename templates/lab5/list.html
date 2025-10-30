@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+{% block main %}
+    <h1>Статьи</h1>
+    {% for articles in articles%}
+        <h2>{{ articles['title'] }}</h2>
+        <blockquote>{{ articles['article_text']}}</blockquote>
+    {% endfor %}
+{% endblock %}
