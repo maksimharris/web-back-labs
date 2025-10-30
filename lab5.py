@@ -57,3 +57,21 @@ def login():
     session['login'] = login
     db_close(conn,cur)
     return render_template('lab5/success_login.html', login=login, authorized = True)
+@lab5.route('/lab5/create', methods = ['GET', 'POST'])
+def create():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login') #весь условный оператор отражает перенаправление неидентифицированного пользователя на страницу входа
+    if request.method == 'GET':
+        return render_template('lab5/create_article.html') #если адрес через GET, то показываем форму создания статьи
+    title = request.form.get('name')
+    article_text = request.form.get('article_text')
+    if not(title or article_text):
+        return render_template('lab5/create_article.html', error = 'Недостаточно данных')
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM users WHERE login = %s;",(login, ))
+    login_id = cur.fetchone()["id"]#находим нашего пользователя
+    cur.execute(f"INSERT INTO articles(user_id,title,article_text) VALUES ({login_id},'{title}','{article_text}');")
+    db_close(conn,cur)
+    return redirect('/lab5')
+    #если адрес запрашивается методом POST, то, значит, пользователь уже заполнил все поля и послал нам статью — вставляем полученные данные в базу."
