@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+{% block main %}
+    {% if authorized %}
+        <h1>Поздравляем</h1>
+        Вы вошли в базу знаний!
+    {% else %}
+        <h1>Упс!</h1>
+        Что-то пошло не так!
+    {% endif %}
+    <br>
+    <a href="/lab5">База знаний</a>
+{% endblock %}
