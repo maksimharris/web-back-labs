@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, make_response,redirect, session
 import psycopg2
 from psycopg2.extras import RealDictCursor #модуль для работы с именами, а не с индексами столбцов
+from werkzeug.security import generate_password_hash, check_password_hash#генерация хэша пароля с солью(случайное число)
 lab5  = Blueprint('lab5',__name__)
 @lab5.route('/lab5')
 def lab():
@@ -31,8 +32,9 @@ def register():
     #возврат результатов: fetchone() - первую строку, fetchall - все строки
     if cur.fetchone():
         db_close(conn,cur)
-        return render_template('lab5/register.html', error = 'Такой пользователь не существует')
-    cur.execute(f"INSERT INTO users (login,password) VALUES ('{login}','{password}');")
+        return render_template('lab5/register.html', error = 'Такой пользователь уже существует')
+    password_hash = generate_password_hash(password)
+    cur.execute(f"INSERT INTO users (login,password) VALUES ('{login}','{password_hash}');")
     db_close(conn,cur)
     return render_template('lab5/success.html',login = login, authorized = True)
 @lab5.route('/lab5/login', methods = ['GET', 'POST'])
@@ -49,7 +51,7 @@ def login():
     if not user:
         db_close(conn,cur)
         return render_template('lab5/login.html', error = 'Логин и/или пароль неверны')
-    if user['password'] != password:
+    if not check_password_hash(user['password'],password):
         db_close(conn,cur)
         return render_template('lab5/login.html', error = 'Логин и/или пароль неверны')
     session['login'] = login
