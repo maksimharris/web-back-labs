@@ -117,7 +117,7 @@ def lists():
     if current_app.config['DB_TYPE'] =='postgres':
         cur.execute("SELECT * FROM articles WHERE user_id = %s;",(login_id,)) #показ только статей пользователя
     else:
-        cur.execute("SELECT * FROM articles WHERE user_id ;",(login_id,)) #показ только статей пользователя
+        cur.execute("SELECT * FROM articles WHERE user_id = ? ;",(login_id,)) #показ только статей пользователя
     articles = cur.fetchall()
 
     db_close(conn,cur)
