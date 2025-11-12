@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Редактирование профиля</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="/lab5/list">Мои статьи</a> |
+        <a href="/lab5/users">Все пользователи</a> |
+        <a href="/lab5/logout">Выйти</a>
+    </div>
+    
+    {% if error %}
+        <div style="color: red; font-weight: bold; margin: 15px 0; padding: 10px; background-color: #ffe6e6; border: 1px solid red;">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+    {% if success %}
+        <div style="color: green; font-weight: bold; margin: 15px 0; padding: 10px; background-color: #e6ffe6; border: 1px solid green;">
+            {{ success }}
+        </div>
+    {% endif %}
+    
+    <form method="post">
+        <div>
+            <label>
+                Логин (неизменяем):
+                <input type="text" value="{{ login }}" disabled style="background-color: #f5f5f5;">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Имя:
+                <input type="text" name="name" value="{{ current_name }}" maxlength="50" required>
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Новый пароль (оставьте пустым, если не хотите менять):
+                <input type="password" name="password">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Подтверждение пароля:
+                <input type="password" name="confirm_password">
+            </label>
+        </div>
+        
+        <div>
+            <button type="submit">Сохранить изменения</button>
+            <a href="/lab5/list" style="margin-left: 15px;">Отмена</a>
+        </div>
+    </form>
+{% endblock %}

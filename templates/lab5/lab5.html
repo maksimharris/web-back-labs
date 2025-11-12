@@ -21,6 +21,8 @@
         <a href="/lab5/register"class = 'hrefs'>Регистрация</a>
         <a href="/lab5/list" class = 'hrefs'>Список статей</a>
         <a href="/lab5/create"class = 'hrefs'>Создать статью</a>
-        <span style ="position:relative; left: 350px">{{ session['login'] or 'Anonymous' }}</span>
+        <a href = "/lab5/logout" class = 'hrefs'>Выход</a>
+        <a href="/lab5/users" class = 'hrefs'>Все зарегистрированные пользователи</a>
+        <span style ="position:relative; left: 100px">{{ session['login'] or 'Anonymous' }}</span>
     </div>
 {% endblock %}

@@ -1,22 +1,54 @@
 {% extends "base.html" %}
 
 {% block lab %}Лабораторная работа 5{% endblock %}
+
 {% block main %}
-    <h1>Статьи</h1>
+    <h1>Мои статьи</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="/lab5/create" style="margin-right: 15px;">Создать новую статью</a>
+        <a href="/lab5/users" style="margin-right: 15px;">Все пользователи</a>
+        <a href="/lab5/public" style="margin-right: 15px;">Публичные статьи</a>
+        <a href="/lab5/profile" style="margin-right: 15px;">Редактировать профиль</a>
+        <a href="/lab5/logout">Выйти</a>
+    </div>
+    
     {% if error %}
-        {{error}}
-        <a href="lab5/create_article">Создать?</a>
+        <div style="color: #666; font-style: italic; margin: 15px 0;">
+            {{ error }}
+        </div>
     {% else %}
-        {% for articles in articles%}
-            <h2>{{ articles['title'] }}</h2>
-            <blockquote>{{ articles['article_text']}}</blockquote>
-            <a href="/lab5/edit/{{ articles.id }}" style="margin-right: 10px;">Редактировать</a>
-            <form action="/lab5/delete/{{ articles.id }}" method="post" style="display: inline;">
-                <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить эту статью?')" 
-                        style="color: red; border: none; background: none; cursor: pointer; text-decoration: underline;">
+        {% for article in articles %}
+            <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; {% if article.is_favorite %} background-color: #fff9e6; {% endif %}">
+                <h3>
+                    {{ article.title }}
+                    {% if article.is_favorite %} ⭐ {% endif %}
+                    {% if article.is_public %} 🌐 {% endif %}
+                </h3>
+                <p style="white-space: pre-wrap;">{{ article.article_text }}</p>
+                <div style="margin-top: 10px;">
+                    <form action="/lab5/toggle_favorite/{{ article.id }}" method="post" style="display: inline; margin-right: 10px;">
+                        <button type="submit">
+                            {% if article.is_favorite %} ❌ Убрать из избранного {% else %} ⭐ Добавить в избранное {% endif %}
+                        </button>
+                    </form>
+                    
+                    <form action="/lab5/toggle_public/{{ article.id }}" method="post" style="display: inline; margin-right: 10px;">
+                        <button type="submit">
+                            {% if article.is_public %} 🔒 Сделать приватной {% else %} 🌐 Опубликовать {% endif %}
+                        </button>
+                    </form>
+                    
+                    <a href="/lab5/edit/{{ article.id }}" style="margin-right: 10px;">Редактировать</a>
+                    
+                    <form action="/lab5/delete/{{ article.id }}" method="post" style="display: inline;">
+                        <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить эту статью?')" 
+                                style="color: red; border: none; background: none; cursor: pointer; text-decoration: underline;">
                             Удалить
-                </button>
-            </form>
+                        </button>
+                    </form>
+                </div>
+            </div>
         {% endfor %}
     {% endif %}
 {% endblock %}

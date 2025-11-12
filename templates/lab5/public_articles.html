@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Публичные статьи</h1>
+    
+    <div style="margin-bottom: 20px;">
+        {% if authorized %}
+            <a href="/lab5/list">Мои статьи</a> |
+            <a href="/lab5/users">Все пользователи</a> |
+            <a href="/lab5/logout">Выйти</a>
+        {% else %}
+            <a href="/lab5/login">Войти</a> |
+            <a href="/lab5/register">Зарегистрироваться</a>
+        {% endif %}
+    </div>
+    
+    {% if articles %}
+        {% for article in articles %}
+            <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                <h3>
+                    {{ article.title }}
+                    {% if article.is_favorite %} ⭐ {% endif %}
+                </h3>
+                <p style="white-space: pre-wrap;">{{ article.article_text }}</p>
+                <div style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                    Автор: {{ article.author_name }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Пока нет публичных статей.</p>
+    {% endif %}
+{% endblock %}

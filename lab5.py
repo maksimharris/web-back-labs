@@ -102,27 +102,253 @@ def create():
 
     db_close(conn,cur)
     return redirect('/lab5')
-@lab5.route('/lab5/list', methods = ['GET','POST'])
-def lists():
+@lab5.route('/lab5/users')
+def all_users():
+    """Страница со списком всех зарегистрированных пользователей"""
+    conn, cur = db_connect()
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT login, name FROM users ORDER BY name;")
+    else:
+        cur.execute("SELECT login, name FROM users ORDER BY name;")
+    
+    users = cur.fetchall()
+    db_close(conn, cur)
+    
+    return render_template('lab5/all_users.html', users=users)
+
+@lab5.route('/lab5/profile', methods=['GET', 'POST'])
+def edit_profile():
+    """Страница изменения имени и пароля"""
     login = session.get('login')
     if not login:
-        return redirect('/lab5/login') #перенаправление на вход в базу, если пользователь неидентифицирован
-    conn, cur  = db_connect()
-    if current_app.config['DB_TYPE'] =='postgres':
-        cur.execute("SELECT * FROM users WHERE login = %s;",(login,))
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+    
+    if request.method == 'GET':
+        # Получаем текущие данные пользователя
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT name FROM users WHERE login = %s;", (login,))
+        else:
+            cur.execute("SELECT name FROM users WHERE login = ?;", (login,))
+        
+        user = cur.fetchone()
+        db_close(conn, cur)
+        
+        return render_template('lab5/edit_profile.html', 
+                             current_name=user['name'] if user else '',
+                             login=login)
+    
+    # Обработка формы изменения профиля
+    new_name = request.form.get('name')
+    new_password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+    
+    error = None
+    
+    if not new_name:
+        error = 'Имя не может быть пустым'
+    elif new_password and new_password != confirm_password:
+        error = 'Пароли не совпадают'
+    elif new_password and len(new_password) < 3:
+        error = 'Пароль должен содержать минимум 3 символа'
+    
+    if error:
+        db_close(conn, cur)
+        return render_template('lab5/edit_profile.html', 
+                             error=error,
+                             current_name=new_name,
+                             login=login)
+    
+    # Обновляем данные пользователя
+    if new_password:
+        password_hash = generate_password_hash(new_password)
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("""
+                UPDATE users SET name = %s, password = %s 
+                WHERE login = %s;
+            """, (new_name, password_hash, login))
+        else:
+            cur.execute("""
+                UPDATE users SET name = ?, password = ? 
+                WHERE login = ?;
+            """, (new_name, password_hash, login))
     else:
-        cur.execute("SELECT * FROM users WHERE login = ?;",(login,))
-    login_id = cur.fetchone()["id"]
-    if current_app.config['DB_TYPE'] =='postgres':
-        cur.execute("SELECT * FROM articles WHERE user_id = %s;",(login_id,)) #показ только статей пользователя
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("UPDATE users SET name = %s WHERE login = %s;", 
+                       (new_name, login))
+        else:
+            cur.execute("UPDATE users SET name = ? WHERE login = ?;", 
+                       (new_name, login))
+    
+    # Обновляем имя в сессии
+    session['user_name'] = new_name
+    
+    db_close(conn, cur)
+    return render_template('lab5/edit_profile.html', 
+                         success='Профиль успешно обновлен!',
+                         current_name=new_name,
+                         login=login)
+
+@lab5.route('/lab5/list')
+def lists():
+    """Список статей пользователя с учетом избранных"""
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
     else:
-        cur.execute("SELECT * FROM articles WHERE user_id = ? ;",(login_id,))
+        cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
+    
+    user_result = cur.fetchone()
+    if not user_result:
+        db_close(conn, cur)
+        return redirect('/lab5/login')
+    
+    user_id = user_result['id']
+    
+    # Получаем статьи, отсортированные по избранным (is_favorite) сначала
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("""
+            SELECT * FROM articles 
+            WHERE user_id = %s 
+            ORDER BY is_favourite DESC, id DESC;
+        """, (user_id,))
+    else:
+        cur.execute("""
+            SELECT * FROM articles 
+            WHERE user_id = ? 
+            ORDER BY is_favourite DESC, id DESC;
+        """, (user_id,))
+    
     articles = cur.fetchall()
-    db_close(conn,cur)
+    db_close(conn, cur)
+    
     if not articles:
-            return render_template('/lab5/list.html', error = 'На данный момент у пользователя нет статей.')
+        return render_template('lab5/list.html', error='На данный момент у пользователя нет статей.')
+    
+    return render_template('lab5/list.html', articles=articles, login=login)
+
+@lab5.route('/lab5/toggle_favorite/<int:article_id>', methods=['POST'])
+def toggle_favorite(article_id):
+    """Переключение статуса избранной статьи"""
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+    
+    # Проверяем, что статья принадлежит пользователю
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("""
+            SELECT a.* FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.id = %s AND u.login = %s;
+        """, (article_id, login))
     else:
-        return render_template('/lab5/list.html', articles = articles)
+        cur.execute("""
+            SELECT a.* FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.id = ? AND u.login = ?;
+        """, (article_id, login))
+    
+    article = cur.fetchone()
+    
+    if not article:
+        db_close(conn, cur)
+        return render_template('lab5/error.html', error='Статья не найдена')
+    
+    # Переключаем статус избранного
+    new_favorite_status = not article['is_favourite']
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("UPDATE articles SET is_favourite = %s WHERE id = %s;", 
+                   (new_favorite_status, article_id))
+    else:
+        cur.execute("UPDATE articles SET is_favourite = ? WHERE id = ?;", 
+                   (new_favorite_status, article_id))
+    
+    db_close(conn, cur)
+    return redirect('/lab5/list')
+
+@lab5.route('/lab5/public')
+def public_articles():
+    """Публичные статьи для всех пользователей"""
+    conn, cur = db_connect()
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("""
+            SELECT a.*, u.name as author_name 
+            FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.is_public = true 
+            ORDER BY a.is_favourite DESC, a.id DESC;
+        """)
+    else:
+        cur.execute("""
+            SELECT a.*, u.name as author_name 
+            FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.is_public = 1 
+            ORDER BY a.is_favourite DESC, a.id DESC;
+        """)
+    
+    articles = cur.fetchall()
+    db_close(conn, cur)
+    
+    login = session.get('login')
+    
+    return render_template('lab5/public_articles.html', 
+                         articles=articles, 
+                         authorized=bool(login),
+                         login=login)
+
+@lab5.route('/lab5/toggle_public/<int:article_id>', methods=['POST'])
+def toggle_public(article_id):
+    """Переключение статуса публичности статьи"""
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+    
+    # Проверяем, что статья принадлежит пользователю
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("""
+            SELECT a.* FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.id = %s AND u.login = %s;
+        """, (article_id, login))
+    else:
+        cur.execute("""
+            SELECT a.* FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            WHERE a.id = ? AND u.login = ?;
+        """, (article_id, login))
+    
+    article = cur.fetchone()
+    
+    if not article:
+        db_close(conn, cur)
+        return render_template('lab5/error.html', error='Статья не найдена')
+    
+    # Переключаем статус публичности
+    new_public_status = not article['is_public']
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("UPDATE articles SET is_public = %s WHERE id = %s;", 
+                   (new_public_status, article_id))
+    else:
+        cur.execute("UPDATE articles SET is_public = ? WHERE id = ?;", 
+                   (new_public_status, article_id))
+    
+    db_close(conn, cur)
+    return redirect('/lab5/list')
 @lab5.route('/lab5/logout')
 def logout():
     session.clear()  # Очищаем сессию
