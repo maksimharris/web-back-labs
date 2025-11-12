@@ -1,7 +1,7 @@
 import datetime
 
 from flask import Flask, url_for, request, redirect, abort, render_template, current_app
-
+import os
 from lab1 import lab1
 
 from lab2 import lab2
@@ -14,7 +14,8 @@ from lab5 import lab5
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ыускуе_лун')
-app.confif['DB_TYPE'] = os.environ.get('DB_TYPE','postgres')
+app.config['DB_TYPE'] = os.environ.get('DB_TYPE','postgres')
+
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)

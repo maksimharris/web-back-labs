@@ -3,8 +3,20 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 {% block main %}
     <h1>Статьи</h1>
-    {% for articles in articles%}
-        <h2>{{ articles['title'] }}</h2>
-        <blockquote>{{ articles['article_text']}}</blockquote>
-    {% endfor %}
+    {% if error %}
+        {{error}}
+        <a href="lab5/create_article">Создать?</a>
+    {% else %}
+        {% for articles in articles%}
+            <h2>{{ articles['title'] }}</h2>
+            <blockquote>{{ articles['article_text']}}</blockquote>
+            <a href="/lab5/edit/{{ articles.id }}" style="margin-right: 10px;">Редактировать</a>
+            <form action="/lab5/delete/{{ articles.id }}" method="post" style="display: inline;">
+                <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить эту статью?')" 
+                        style="color: red; border: none; background: none; cursor: pointer; text-decoration: underline;">
+                            Удалить
+                </button>
+            </form>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

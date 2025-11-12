@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Редактирование статьи</h1>
+    
+    {% if error %}
+        <div style="color: red; font-weight: bold; margin: 15px 0; padding: 10px; background-color: #ffe6e6; border: 1px solid red;">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+    <form method="post">
+        <div>
+            <label>
+                Название статьи:
+                <input type="text" name="name" maxlength="50" value="{{ article.title }}">
+            </label>
+        </div>
+        <div>
+            <textarea name="article_text" rows="10" style="width: 100%;">{{ article.article_text }}</textarea>
+        </div>
+        <div>
+            <button type="submit">Сохранить изменения</button>
+            <a href="/lab5/list" style="margin-left: 15px;">Отмена</a>
+        </div>
+    </form>
+{% endblock %}
