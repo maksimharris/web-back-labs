@@ -21,7 +21,7 @@ def db_connect():
         dir_path = path.dirname(path.realpath(__file__))
         db_path = path.join(dir_path,"databse.db")
         conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.ROW
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
     return conn, cur
 def db_close(conn,cur):
@@ -40,7 +40,7 @@ def register():
     if current_app.config['DB_TYPE'] =='postgres':
         cur.execute("SELECT login FROM users WHERE login = %s;",(login, ))
     else:
-        cur.execute("SELECT login FROM users WHERE login = ?;", (login))
+        cur.execute("SELECT login FROM users WHERE login = ?;", (login, ))
  
     #возврат результатов: fetchone() - первую строку, fetchall - все строки
     if cur.fetchone():

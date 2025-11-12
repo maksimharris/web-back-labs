@@ -2,6 +2,10 @@ import datetime
 
 from flask import Flask, url_for, request, redirect, abort, render_template, current_app
 import os
+from dotenv import load_dotenv  # Добавьте эту строку
+
+load_dotenv()
+
 from lab1 import lab1
 
 from lab2 import lab2
