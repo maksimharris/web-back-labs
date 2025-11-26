@@ -3,43 +3,128 @@
 {% block lab %}Лабораторная работа 6{% endblock %}
 {% block script %}
 <script>
-    function getOfficeList(){//Запрашиваем информацию из lab6.py - бэкэнда
+    function getOfficeList(){
         const url = '/lab6/json-rpc-api/';
         const json = {
             'jsonrpc':'2.0',
             'method':'info',
             'id':Math.round(Math.random()*1000)
         };
-        fetch(url, { //Отправляем запрос через fetch
+        fetch(url, {
         method: 'POST',
         headers: {'Content-type':'application/json'},
         body: JSON.stringify(json)
         })
         .then(function(response){
-            return response.json() //Получаем данные в формате json
+            return response.json()
         })
         .then(function(data) {
             const office_list = data.result;
             const ul = document.getElementById('office-list');
-            ul.innerHTML = ''; // Очищаем список перед обновлением
+            ul.innerHTML = '';
+            
+            let totalCost = 0;
+            let userOfficesCount = 0;
             
             for (let i = 0; i < office_list.length; i++) {
                 const office = office_list[i];
                 const li = document.createElement('li');
                 li.style.marginBottom = '10px';
-                li.style.padding = '10px';
+                li.style.padding = '15px';
                 li.style.border = '1px solid #ddd';
                 li.style.borderRadius = '5px';
                 
-                // Отображаем информацию об офисе
-                li.innerText = `Офис ${office.number}: ${office.tenant || 'свободен'}`;
+                // Определяем цвет фона в зависимости от статуса
+                if (office.tenant) {
+                    // Проверяем, арендован ли офис текущим пользователем
+                    fetch('/lab6/check-user', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({tenant: office.tenant})
+                    })
+                    .then(response => response.json())
+                    .then(userData => {
+                        if (userData.is_current_user) {
+                            li.style.backgroundColor = '#e8f5e8'; // Зеленый для своих офисов
+                        } else {
+                            li.style.backgroundColor = '#fff0f0'; // Красноватый для чужих
+                        }
+                    });
+                } else {
+                    li.style.backgroundColor = '#fff'; // Белый для свободных
+                }
                 
-                // Кнопка бронирования (только для свободных офисов)
-                if (!office.tenant) {
+                // Отображаем информацию об офисе с ценой и именем арендатора
+                const officeInfo = document.createElement('div');
+                let statusText = '<span style="color: green;">свободен</span>';
+                if (office.tenant) {
+                    // Проверяем, является ли арендатор текущим пользователем
+                    fetch('/lab6/check-user', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({tenant: office.tenant})
+                    })
+                    .then(response => response.json())
+                    .then(userData => {
+                        if (userData.is_current_user) {
+                            statusText = `<span style="color: #e74c3c; font-weight: bold;">🟢 арендован вами</span>`;
+                            totalCost += office.price;
+                            userOfficesCount++;
+                            
+                            // Кнопка освобождения (только для офисов, арендованных текущим пользователем)
+                            const cancelButton = document.createElement('button');
+                            cancelButton.innerText = '❌ Освободить';
+                            cancelButton.style.marginTop = '10px';
+                            cancelButton.style.marginRight = '10px';
+                            cancelButton.style.padding = '8px 15px';
+                            cancelButton.style.backgroundColor = '#f44336';
+                            cancelButton.style.color = 'white';
+                            cancelButton.style.border = 'none';
+                            cancelButton.style.borderRadius = '3px';
+                            cancelButton.style.cursor = 'pointer';
+                            cancelButton.onclick = function() {cancellation(office.number)};
+                            li.appendChild(cancelButton);
+                        } else {
+                            statusText = `<span style="color: #666;">🔴 арендован пользователем: ${office.tenant}</span>`;
+                            
+                            // Для чужих офисов показываем информационное сообщение
+                            const infoText = document.createElement('span');
+                            infoText.innerText = '❌ Занято другим пользователем';
+                            infoText.style.marginTop = '10px';
+                            infoText.style.marginRight = '10px';
+                            infoText.style.padding = '8px 15px';
+                            infoText.style.color = '#666';
+                            infoText.style.fontStyle = 'italic';
+                            li.appendChild(infoText);
+                        }
+                        
+                        officeInfo.innerHTML = `
+                            <strong>Офис ${office.number}</strong><br>
+                            💰 Стоимость: <strong>${office.price} руб./день</strong><br>
+                            👤 Статус: ${statusText}
+                        `;
+                        li.insertBefore(officeInfo, li.firstChild);
+                        
+                        // Обновляем информацию о стоимости после обработки всех офисов
+                        if (i === office_list.length - 1) {
+                            setTimeout(() => updateRentalInfo(totalCost, userOfficesCount), 100);
+                        }
+                    });
+                } else {
+                    statusText = '<span style="color: green;">свободен</span>';
+                    officeInfo.innerHTML = `
+                        <strong>Офис ${office.number}</strong><br>
+                        💰 Стоимость: <strong>${office.price} руб./день</strong><br>
+                        👤 Статус: ${statusText}
+                    `;
+                    li.appendChild(officeInfo);
+                    
+                    // Кнопка бронирования (только для свободных офисов)
                     const bookingButton = document.createElement('button');
-                    bookingButton.innerText = 'Зарезервировать';
-                    bookingButton.style.marginLeft = '10px';
-                    bookingButton.style.padding = '5px 10px';
+                    bookingButton.innerText = '📝 Зарезервировать';
+                    bookingButton.style.marginTop = '10px';
+                    bookingButton.style.marginRight = '10px';
+                    bookingButton.style.padding = '8px 15px';
                     bookingButton.style.backgroundColor = '#4CAF50';
                     bookingButton.style.color = 'white';
                     bookingButton.style.border = 'none';
@@ -47,24 +132,33 @@
                     bookingButton.style.cursor = 'pointer';
                     bookingButton.onclick = function() {booking(office.number)};
                     li.appendChild(bookingButton);
-                } else {
-                    // Кнопка освобождения (только для занятых офисов)
-                    const cancelButton = document.createElement('button');
-                    cancelButton.innerText = 'Освободить';
-                    cancelButton.style.marginLeft = '10px';
-                    cancelButton.style.padding = '5px 10px';
-                    cancelButton.style.backgroundColor = '#f44336';
-                    cancelButton.style.color = 'white';
-                    cancelButton.style.border = 'none';
-                    cancelButton.style.borderRadius = '3px';
-                    cancelButton.style.cursor = 'pointer';
-                    cancelButton.onclick = function() {cancellation(office.number)};
-                    li.appendChild(cancelButton);
                 }
                 
                 ul.appendChild(li);
             }
+            
+            // Обновляем информацию о стоимости аренды
+            updateRentalInfo(totalCost, userOfficesCount);
         });
+    }
+
+    function updateRentalInfo(totalCost, officesCount) {
+        const rentalInfo = document.getElementById('rental-info');
+        if (officesCount > 0) {
+            rentalInfo.innerHTML = `
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h3>💰 Ваша текущая аренда:</h3>
+                    <p>Количество офисов: <strong>${officesCount}</strong></p>
+                    <p>Общая стоимость: <strong style="color: #e74c3c; font-size: 1.2em;">${totalCost} руб./день</strong></p>
+                </div>
+            `;
+        } else {
+            rentalInfo.innerHTML = `
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <p>📊 У вас нет арендованных офисов</p>
+                </div>
+            `;
+        }
     }
 
     function booking(officeNumber) {
@@ -91,6 +185,9 @@
                         break;
                     case 2:
                         alert('Офис уже арендуется');
+                        break;
+                    case 5:
+                        alert('Вы уже забронировали офис. Освободите текущий офис перед бронированием нового.');
                         break;
                     case -32601:
                         alert('Странная ошибка');
@@ -130,6 +227,9 @@
                     case 3:
                         alert('Вы не можете освободить чужой офис');
                         break;
+                    case 4:
+                        alert('Офис не найден');
+                        break;
                     case -32601:
                         alert('Странная ошибка');
                         break;                  
@@ -150,12 +250,30 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Система бронирования офисов</h1>
-    <div style="margin-bottom: 20px;">
-        <a href="/lab5/login" style="padding: 10px 20px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px;">Войти в систему</a>
-        <a href="/lab5/logout" style="padding: 10px 20px; background: #ff9800; color: white; text-decoration: none; border-radius: 5px; margin-left: 10px;">Выйти</a>
+    <h1>🏢 Система бронирования офисов</h1>
+    
+    <!-- Кнопки входа и выхода -->
+    <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <a href="/lab5/login" 
+               style="padding: 10px 20px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                🔑 Войти
+            </a>
+            
+            <form action="/lab6/logout" method="post" style="margin: 0;">
+                <button type="submit" 
+                        style="padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                    🚪 Выйти
+                </button>
+            </form>
+            
+        </div>
     </div>
     
-    <h2>Список кабинетов:</h2>
-    <ul id='office-list'></ul>
+    <h2>📋 Список кабинетов:</h2>
+    <ul id='office-list' style="list-style: none; padding: 0;"></ul>
+    
+    <div id="rental-info">
+        <!-- Здесь будет отображаться информация о стоимости аренды -->
+    </div>
 {% endblock %}
