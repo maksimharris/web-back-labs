@@ -21,19 +21,52 @@
         .then(function(data) {
             const office_list = data.result;
             const ul = document.getElementById('office-list');
+            ul.innerHTML = ''; // Очищаем список перед обновлением
+            
             for (let i = 0; i < office_list.length; i++) {
                 const office = office_list[i];
                 const li = document.createElement('li');
-                li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
+                li.style.marginBottom = '10px';
+                li.style.padding = '10px';
+                li.style.border = '1px solid #ddd';
+                li.style.borderRadius = '5px';
                 
-                const bookingButton = document.createElement('button');
-                bookingButton.innerText = 'зарезервировать';
-                bookingButton.onclick = function() {booking(office.number)};
-                li.appendChild(bookingButton);
+                // Отображаем информацию об офисе
+                li.innerText = `Офис ${office.number}: ${office.tenant || 'свободен'}`;
+                
+                // Кнопка бронирования (только для свободных офисов)
+                if (!office.tenant) {
+                    const bookingButton = document.createElement('button');
+                    bookingButton.innerText = 'Зарезервировать';
+                    bookingButton.style.marginLeft = '10px';
+                    bookingButton.style.padding = '5px 10px';
+                    bookingButton.style.backgroundColor = '#4CAF50';
+                    bookingButton.style.color = 'white';
+                    bookingButton.style.border = 'none';
+                    bookingButton.style.borderRadius = '3px';
+                    bookingButton.style.cursor = 'pointer';
+                    bookingButton.onclick = function() {booking(office.number)};
+                    li.appendChild(bookingButton);
+                } else {
+                    // Кнопка освобождения (только для занятых офисов)
+                    const cancelButton = document.createElement('button');
+                    cancelButton.innerText = 'Освободить';
+                    cancelButton.style.marginLeft = '10px';
+                    cancelButton.style.padding = '5px 10px';
+                    cancelButton.style.backgroundColor = '#f44336';
+                    cancelButton.style.color = 'white';
+                    cancelButton.style.border = 'none';
+                    cancelButton.style.borderRadius = '3px';
+                    cancelButton.style.cursor = 'pointer';
+                    cancelButton.onclick = function() {cancellation(office.number)};
+                    li.appendChild(cancelButton);
+                }
+                
                 ul.appendChild(li);
             }
         });
     }
+
     function booking(officeNumber) {
         const url = '/lab6/json-rpc-api/'
         const json = {
@@ -67,9 +100,49 @@
             else {
                 document.getElementById('office-list').innerHTML = '';
                 getOfficeList();
+                alert('Офис успешно забронирован!');
             }
         })
     }
+
+    function cancellation(officeNumber) {
+        const url = '/lab6/json-rpc-api/'
+        const json = {
+            'jsonrpc':'2.0',
+            'method':'cancellation',
+            'params':officeNumber,
+            'id':Math.round(Math.random()*1000)
+        };
+        fetch(url, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(json)
+        })
+        .then(function(response){
+            return response.json()
+        })
+        .then(function(data){
+            if(data.error) {
+                switch(data.error.code){
+                    case 1:
+                        alert('Вы не авторизованы, пожалуйста, авторизуйтесь');
+                        break;
+                    case 3:
+                        alert('Вы не можете освободить чужой офис');
+                        break;
+                    case -32601:
+                        alert('Странная ошибка');
+                        break;                  
+                }
+            }
+            else {
+                document.getElementById('office-list').innerHTML = '';
+                getOfficeList();
+                alert('Офис успешно освобожден!');
+            }
+        })
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         getOfficeList();
     });
@@ -77,6 +150,12 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Список кабинетов:</h1>
-    <ul id = 'office-list'></ul>
+    <h1>Система бронирования офисов</h1>
+    <div style="margin-bottom: 20px;">
+        <a href="/lab5/login" style="padding: 10px 20px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px;">Войти в систему</a>
+        <a href="/lab5/logout" style="padding: 10px 20px; background: #ff9800; color: white; text-decoration: none; border-radius: 5px; margin-left: 10px;">Выйти</a>
+    </div>
+    
+    <h2>Список кабинетов:</h2>
+    <ul id='office-list'></ul>
 {% endblock %}
