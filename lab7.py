@@ -68,7 +68,7 @@ films = [
         "description": "Обычное корейское семейство Кимов жизнь не балует. Приходится жить в сыром грязном полуподвале, воровать интернет у соседей и перебиваться случайными подработками. Однажды друг сына семейства, уезжая на стажировку за границу, предлагает тому заменить его и поработать репетитором у старшеклассницы в богатой семье Пак. Подделав диплом о высшем образовании, парень отправляется в шикарный дизайнерский особняк и производит на хозяйку дома хорошее впечатление."
     }
 ]
-@lab7.route('/lab7/rest-api/films', methods = ['GET'])
+@lab7.route('/lab7/rest-api/films/', methods = ['GET'])
 def get_films():
     return films
 
@@ -95,6 +95,11 @@ def put_film(id):
         abort(404)
 @lab7.route('/lab7/rest-api/films/',methods = ['POST'])
 def add_film():
-    film = request.get_json()
+    film = request.get_json()    
+    if not film:
+        return {"error": "No data provided"}, 400
+    # Добавляем фильм в список
     films.append(film)
-    return {"index": len(films) - 1}, 201
+    # Возвращаем индекс нового элемента
+    new_index = len(films) - 1
+    return {"index": new_index}, 201
