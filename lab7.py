@@ -72,9 +72,16 @@ films = [
 def get_films():
     return films
 
-@lab7.route('/lab7/rest-api/<int:id>', methods = ['GET'])
+@lab7.route('/lab7/rest-api/films/<int:id>', methods = ['GET'])
 def get_film(id):
     if 0 <= id < len(films):
         return films[id]  # Flask автоматически сериализует dict в JSON
     else:
         abort(404)  # Просто вызываем abort с кодом 404
+@lab7.route('/lab7/rest-api/films/<int:id>', methods = ['DELETE'])
+def del_film(id):
+    if 0 <= id < len(films):
+         del films[id]
+         return '',204  
+    else:
+        abort(404)
