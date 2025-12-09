@@ -86,7 +86,7 @@ def del_film(id):
     else:
         abort(404)
 @lab7.route('/lab7/rest-api/films/<int:id>', methods = ['PUT'])
-def del_film(id):
+def put_film(id):
     if 0 <= id < len(films):
         film = request.get_json()
         films[id] = film
