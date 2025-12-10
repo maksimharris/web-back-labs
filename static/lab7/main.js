@@ -6,8 +6,9 @@ function fillFilmList() {
     .then(function (films){
         let tbody = document.getElementById('film-list');
         tbody.innerHTML = '';
-        for (let i = 0; i<films.length; i++){
+        for (let i = 0; i<films.length; i++) {
             let tr = document.createElement('tr');
+            
             let tdTitle = document.createElement('td');
             let tdTitleRus = document.createElement('td');
             let tdYear = document.createElement('td');
