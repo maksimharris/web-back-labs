@@ -1,4 +1,5 @@
-from flask import Blueprint, request, render_template, session, redirect,abort
+from flask import Blueprint, request, render_template, session, redirect, abort
+import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -68,53 +69,98 @@ films = [
         "description": "Обычное корейское семейство Кимов жизнь не балует. Приходится жить в сыром грязном полуподвале, воровать интернет у соседей и перебиваться случайными подработками. Однажды друг сына семейства, уезжая на стажировку за границу, предлагает тому заменить его и поработать репетитором у старшеклассницы в богатой семье Пак. Подделав диплом о высшем образовании, парень отправляется в шикарный дизайнерский особняк и производит на хозяйку дома хорошее впечатление."
     }
 ]
-@lab7.route('/lab7/rest-api/films/', methods = ['GET'])
+
+def validate_film_data(film):
+    """Функция для валидации данных фильма"""
+    errors = {}
+    
+    # Проверка русского названия
+    title_ru = film.get('title_ru', '').strip()
+    if not title_ru:
+        errors['title_ru'] = 'Русское название обязательно'
+    
+    # Проверка оригинального названия
+    title = film.get('title', '').strip()
+    if not title and not title_ru:
+        # Если оба названия пустые
+        errors['title'] = 'Заполните хотя бы одно название'
+    elif not title:
+        # Если оригинальное пустое, а русское есть - копируем русское в оригинальное
+        film['title'] = title_ru
+    
+    # Проверка года
+    year = film.get('year')
+    current_year = datetime.datetime.now().year
+    
+    if not isinstance(year, int):
+        errors['year'] = 'Год должен быть числом'
+    elif year < 1895:
+        errors['year'] = f'Год должен быть не ранее 1895 (первый фильм)'
+    elif year > current_year + 1:  # +1 для фильмов, которые выйдут в следующем году
+        errors['year'] = f'Год должен быть не позднее {current_year + 1}'
+    
+    # Проверка описания
+    description = film.get('description', '').strip()
+    if not description:
+        errors['description'] = 'Описание обязательно'
+    elif len(description) > 2000:
+        errors['description'] = f'Описание должно быть не более 2000 символов (сейчас {len(description)})'
+    
+    return errors
+
+@lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
     return films
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods = ['GET'])
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
     if 0 <= id < len(films):
-        return films[id]  # Flask автоматически сериализует dict в JSON
-    else:
-        abort(404)  # Просто вызываем abort с кодом 404
-@lab7.route('/lab7/rest-api/films/<int:id>', methods = ['DELETE'])
-def del_film(id):
-    if 0 <= id < len(films):
-         del films[id]
-         return '',204  
+        return films[id]
     else:
         abort(404)
-@lab7.route('/lab7/rest-api/films/<int:id>', methods = ['PUT'])
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+def del_film(id):
+    if 0 <= id < len(films):
+        del films[id]
+        return '', 204
+    else:
+        abort(404)
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
     if 0 <= id < len(films):
         film = request.get_json()
-        if film.get('description') == '':
-            return {'description': 'Заполните описание'}, 400
-        # Логика для названий: если оригинальное пустое, а русское задано,
-        # то в оригинальное записывается русское название
-        if film.get('title') == '' and film.get('title_ru'):
-            film['title'] = film['title_ru']
         
+        if not film:
+            return {"error": "No data provided"}, 400
+        
+        # Валидация данных
+        errors = validate_film_data(film)
+        if errors:
+            return errors, 400
+        
+        # Обновляем фильм
         films[id] = film
         return films[id]
     else:
         abort(404)
+
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
     
-    # Проверка на пустое описание
-    if film.get('description') == '':
-        return {'description': 'Заполните описание'}, 400
-    
     if not film:
         return {"error": "No data provided"}, 400
     
-    # Логика для названий: если оригинальное пустое, а русское задано,
-    # то в оригинальное записывается русское название
-    if film.get('title') == '' and film.get('title_ru'):
-        film['title'] = film['title_ru']   
+    # Валидация данных
+    errors = validate_film_data(film)
+    if errors:
+        return errors, 400
+    
+    # Добавляем фильм в список
     films.append(film)
+    
+    # Возвращаем индекс нового элемента
     new_index = len(films) - 1
     return {"index": new_index}, 201
