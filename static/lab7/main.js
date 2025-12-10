@@ -1,40 +1,41 @@
 function fillFilmList() {
     fetch('/lab7/rest-api/films/')
-    .then(function (response) {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
+    .then(function (data) {
+        return data.json();
     })
     .then(function (films){
-        console.log('Films received:', films); // Для отладки
-        
         let tbody = document.getElementById('film-list');
-        if (!tbody) {
-            console.error('Element #film-list not found!');
-            return;
-        }
-        
         tbody.innerHTML = '';
-        
-        if (films.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4">Нет фильмов</td></tr>';
-            return;
-        }
         
         for (let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
             
-            let tdTitle = document.createElement('td');
+            // Первая колонка: русское название (главное)
             let tdTitleRus = document.createElement('td');
+            tdTitleRus.innerText = films[i].title_ru || 'Без названия';
+            
+            // Вторая колонка: оригинальное название (второстепенное)
+            let tdTitle = document.createElement('td');
+            let originalTitle = films[i].title || '';
+            
+            if (originalTitle && originalTitle !== films[i].title_ru) {
+                // Если есть оригинальное название и оно отличается от русского
+                let span = document.createElement('span');
+                span.className = 'original-title';
+                span.innerText = `(${originalTitle})`;
+                tdTitle.appendChild(span);
+            } else {
+                // Если оригинального нет или оно совпадает с русским
+                tdTitle.innerHTML = '<span class="original-title" style="color: #999;">—</span>';
+            }
+            
+            // Третья колонка: год
             let tdYear = document.createElement('td');
+            tdYear.innerText = films[i].year || '—';
+            
+            // Четвертая колонка: действия
             let tdActions = document.createElement('td');
-
-            // ИСПРАВЛЕНО: показываем оригинальное название всегда
-            tdTitle.innerText = films[i].title || '';
-            tdTitleRus.innerText = films[i].title_ru || '';
-            tdYear.innerText = films[i].year || '';
-
+            
             let editButton = document.createElement('button');
             editButton.innerText = 'редактировать';
             editButton.onclick = function(){
@@ -44,14 +45,16 @@ function fillFilmList() {
             let delButton = document.createElement('button');
             delButton.innerText = 'удалить';
             delButton.onclick = function() {
-                deleteFilm(i, films[i].title_ru || 'Без названия');
+                deleteFilm(i, films[i].title_ru || 'этот фильм');
             }
 
             tdActions.append(editButton);
             tdActions.append(delButton);
-
-            tr.append(tdTitle);
+            
+            // Добавляем колонки в правильном порядке:
+            // 1. Русское название, 2. Оригинальное, 3. Год, 4. Действия
             tr.append(tdTitleRus);
+            tr.append(tdTitle);
             tr.append(tdYear);
             tr.append(tdActions);
 
@@ -60,12 +63,9 @@ function fillFilmList() {
     })
     .catch(function(error) {
         console.error('Error loading films:', error);
-        let tbody = document.getElementById('film-list');
-        if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="4">Ошибка загрузки фильмов</td></tr>';
-        }
     });
 }
+
 
 function deleteFilm(id, title){
     if (!confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
