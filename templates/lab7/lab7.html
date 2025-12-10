@@ -3,6 +3,20 @@
 {% block lab %}Лабораторная работа 7{% endblock %}
 {% block script %}
 <script src = "{{ url_for('static',filename='lab7/main.js') }}"></script>
+<style>
+    .modal{
+        display: none;
+        z-index:100;
+        box-shadow: 3px 3px 5px black;
+        background: white;
+        width: 400px;
+        left:50%;
+        top: 220px;
+        margin-left: -200px;
+        position:absolute;
+        padding: 20px;
+    }
+</style>
 {% endblock %}
 {% block main %}
     <h1>Список фильмов</h1>
@@ -21,5 +35,30 @@
     </script>
     <div>
         <button onclick = "addFilm()">Добавить фильм</button>
+    </div>
+    <div class="modal">
+        <input type="hidden" id="id">
+        <label>
+            Название фильма на русском:
+            <input type="text" id="title-ru">
+        </label><br>
+
+        <label>
+            Название фильма на оригинальном языке:
+            <i>(если фильм русский, то оставьте пустым)</i>
+            <input type="text" id="title">
+        </label><br>
+        
+        <label>
+            Год выпуска:
+            <input type="number" id="year">
+        </label><br>
+
+        <label>
+            <textarea id="description"></textarea>
+        </label><br>
+
+        <button onclick="sendFilm()">OK</button>
+        <button onclick = "cancel()">Отмена</button>
     </div>
 {% endblock %}
