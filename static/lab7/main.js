@@ -56,6 +56,7 @@ function deleteFilm(id,title){
 
 function showModal(){
     document.querySelector('div.modal').style.display = 'block';
+    document.getElementById('description-error').innerText = '';
 }
 
 function hideModal(){
@@ -72,6 +73,7 @@ function addFilm(){
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+    document.getElementById('description-error').innerText = '';
     showModal();
 }
 
@@ -89,10 +91,18 @@ function sendFilm() {
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(film)
     })
-    .then(function(){
+    .then(function(resp){
+        if(resp.ok) {
         fillFilmList();
         hideModal();
-    });
+        return {};
+        }
+        return resp.json();
+    })
+    .then(function(errors) {
+        if(errors.description)
+            document.getElementById('description-error').innerText = errors.description;
+    })
 }
 function editFilm(id){
     fetch(`/lab7/rest-api/films/${id}`)
@@ -102,7 +112,7 @@ function editFilm(id){
     .then(function (film) {
         document.getElementById('id').value = id;
         document.getElementById('title').value = film.title;
-        document.getElementById('title-ru').value = film.title_ry;
+        document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
         showModal();

@@ -89,13 +89,17 @@ def del_film(id):
 def put_film(id):
     if 0 <= id < len(films):
         film = request.get_json()
+        if film['description'] =='':
+            return{'description':'Заполните описание'},400
         films[id] = film
         return films[id]
     else:
         abort(404)
 @lab7.route('/lab7/rest-api/films/',methods = ['POST'])
 def add_film():
-    film = request.get_json()    
+    film = request.get_json()
+    if film['description'] =='':
+            return{'description':'Заполните описание'},400   
     if not film:
         return {"error": "No data provided"}, 400
     # Добавляем фильм в список
