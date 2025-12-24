@@ -4,7 +4,7 @@ from flask import Flask, url_for, request, redirect, abort, render_template, cur
 import os
 from os import path
 from flask_sqlalchemy import SQLAlchemy
-from db.models import users,articles
+from db.models import users
 from flask_login import LoginManager
 from db import db
 from dotenv import load_dotenv  # Добавьте эту строку
@@ -141,3 +141,34 @@ def main():
 def in_errors(err):
     return '500. Внутренняя ошибка сервера.'
 
+if __name__ == '__main__':
+    # Проверяем и создаем таблицы если их нет
+    with app.app_context():
+        # Импортируем здесь, чтобы избежать циклических импортов
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        
+        # Проверяем есть ли таблица users
+        if 'users' not in inspector.get_table_names():
+            print("Создание таблиц в базе данных...")
+            db.create_all()
+            print("✅ Таблицы созданы!")
+            
+            # Создаем админа по умолчанию
+            from werkzeug.security import generate_password_hash
+            from db.models import users
+            
+            admin = users(
+                login='admin',
+                password=generate_password_hash('admin123')
+            )
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Пользователь admin создан")
+    
+    app.run(
+        host='127.0.0.1',
+        port=5000,
+        debug=True,
+        use_reloader=False
+    )
