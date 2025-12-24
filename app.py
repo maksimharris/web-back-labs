@@ -4,7 +4,7 @@ from flask import Flask, url_for, request, redirect, abort, render_template, cur
 import os
 from os import path
 from flask_sqlalchemy import SQLAlchemy
-from db.models import users
+from db.models import users,articles
 from flask_login import LoginManager
 from db import db
 from dotenv import load_dotenv  # Добавьте эту строку
@@ -28,7 +28,6 @@ from lab7 import lab7
 from lab8 import lab8
 
 from rgz import rgz
-
 app = Flask(__name__)
 
 login_manager = LoginManager()
@@ -142,10 +141,3 @@ def main():
 def in_errors(err):
     return '500. Внутренняя ошибка сервера.'
 
-if __name__ == '__main__':
-    app.run(
-        host='127.0.0.1',
-        port=5000,
-        debug=True,
-        use_reloader=False  # ← КЛЮЧЕВОЙ ПАРАМЕТР
-    )

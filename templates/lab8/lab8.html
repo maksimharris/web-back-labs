@@ -95,14 +95,26 @@
 </style>
 
 <h1>База знаний</h1>
-
+{% if current_user.is_authenticated %}
+    <div class="welcome-message">
+        Добро пожаловать, {{ current_user.login }}!
+    </div>
+{% endif %}
 <div class="container">
     <ul class="nav-links">
-        <li><a href="/lab8/login">🔐 Вход</a></li>
-        <li><a href="/lab8/register">📝 Регистрация</a></li>
+        {% if not current_user.is_authenticated %}
+            <li><a href="/lab8/login">🔐 Вход</a></li>
+            <li><a href="/lab8/register">📝 Регистрация</a></li>
+        {% endif %}
         <li><a href="/lab8/articles">📚 Список статей</a></li>
         <li><a href="/lab8/create">✏️ Создать статью</a></li>
     </ul>
+        {% if current_user.is_authenticated %}
+        Пользователь: {{ current_user.login }}
+        <a href="/lab8/logout" class="logout-btn">Выйти</a>
+    {% else %}
+        Анонимный пользователь
+    {% endif %}
 </div>
 
 <div class="user-info">
