@@ -4,7 +4,8 @@ from flask import Flask, url_for, request, redirect, abort, render_template, cur
 import os
 from os import path
 from flask_sqlalchemy import SQLAlchemy
-
+from db.models import users
+from flask_login import LoginManager
 from db import db
 from dotenv import load_dotenv  # Добавьте эту строку
 
@@ -29,6 +30,15 @@ from lab8 import lab8
 from rgz import rgz
 
 app = Flask(__name__)
+
+login_manager = LoginManager()
+login_manager.login_view = 'lab8.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_users(login_id):
+    return users.query.get(int(login_id))
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ыускуе_лун')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
