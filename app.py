@@ -20,6 +20,8 @@ from lab6 import lab6
 
 from lab7 import lab7
 
+from rgz import rgz
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ыускуе_лун')
 app.config['DB_TYPE'] = os.environ.get('DB_TYPE','postgres')
@@ -32,6 +34,8 @@ app.register_blueprint(lab4)
 app.register_blueprint(lab5)
 app.register_blueprint(lab6)
 app.register_blueprint(lab7)
+app.register_blueprint(rgz)
+
 count = 0
 access_log = []
 @app.errorhandler(404)
@@ -104,3 +108,11 @@ def main():
 @app.errorhandler(500)
 def in_errors(err):
     return '500. Внутренняя ошибка сервера.'
+
+if __name__ == '__main__':
+    app.run(
+        host='127.0.0.1',
+        port=5000,
+        debug=True,
+        use_reloader=False  # ← КЛЮЧЕВОЙ ПАРАМЕТР
+    )

@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+
+{% block lab %}Книжная коллекция{% endblock %}
+
+{% block script %}
+<style>
+    /* Фильтры и поиск */
+    .filters {
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-group label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .range-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .range-group input {
+        flex: 1;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .apply-btn {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+    }
+
+    .apply-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+
+    .reset-btn {
+        background-color: #f8f9fa;
+        color: #555;
+        border: 1px solid #ddd;
+    }
+
+    .reset-btn:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Книги */
+    .books-container {
+        margin-top: 30px;
+    }
+
+    .sort-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .sort-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .sort-btn {
+        padding: 8px 16px;
+        background-color: #f8f9fa;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .sort-btn.active {
+        background-color: #6a11cb;
+        color: white;
+        border-color: #6a11cb;
+    }
+
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .book-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .book-image-container {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        overflow: hidden;
+    }
+
+    .book-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .book-card:hover .book-image {
+        transform: scale(1.05);
+    }
+
+    .book-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .book-info {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.8em;
+    }
+
+    .book-author {
+        color: #666;
+        margin-bottom: 10px;
+        font-style: italic;
+        min-height: 1.2em;
+    }
+
+    .book-meta {
+        display: flex;
+        justify-content: space-between;
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .book-publisher {
+        color: #6a11cb;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .book-year {
+        background-color: #f0f0f0;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.85rem;
+    }
+
+    .book-genre {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    /* Пагинация */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 40px;
+        padding: 20px;
+    }
+
+    .page-btn {
+        padding: 10px 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background-color: #6a11cb;
+        color: white;
+        border-color: #6a11cb;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-info {
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Сообщения */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .no-books {
+        text-align: center;
+        padding: 60px 20px;
+        color: #888;
+    }
+
+    .error-message {
+        background-color: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .demo-info {
+        background-color: #e3f2fd;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        color: #1565c0;
+    }
+
+    .demo-info a {
+        color: #0d47a1;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .demo-info a:hover {
+        text-decoration: underline;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .book-image-container {
+            height: 300px;
+        }
+
+        .sort-controls {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentFilters = {
+        title: '',
+        author: '',
+        publisher: '',
+        min_pages: '',
+        max_pages: '',
+        sort_by: 'id',
+        sort_order: 'asc'
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFilters();
+        loadBooks();
+    });
+
+    async function callRPC(method, params = {}) {
+        try {
+            const response = await fetch('/rgz/json-rpc-api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: method,
+                    params: params,
+                    id: 1
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+            
+            return data.result;
+        } catch (error) {
+            console.error('RPC Error:', error);
+            showError('Ошибка загрузки данных');
+            return null;
+        }
+    }
+
+    async function loadFilters() {
+        const result = await callRPC('get_filters');
+        if (result && result.publishers) {
+            const publisherSelect = document.getElementById('publisher');
+            publisherSelect.innerHTML = '<option value="">Все издательства</option>';
+            
+            result.publishers.forEach(publisher => {
+                if (publisher) {
+                    const option = document.createElement('option');
+                    option.value = publisher;
+                    option.textContent = publisher;
+                    publisherSelect.appendChild(option);
+                }
+            });
+
+            document.getElementById('min-pages').placeholder = `От ${result.min_pages || 0}`;
+            document.getElementById('max-pages').placeholder = `До ${result.max_pages || 1000}`;
+        }
+    }
+
+async function loadBooks() {
+    const booksGrid = document.getElementById('books-grid');
+    
+    booksGrid.innerHTML = '<div class="loading">Загрузка книг...</div>';
+
+    const result = await callRPC('get_books', {
+        ...currentFilters,
+        page: currentPage
+    });
+
+    if (!result) return;
+    
+    // ОБНОВЛЯЕМ totalPages!
+    totalPages = result.total_pages;
+    
+    // Обновляем информацию о страницах
+    document.getElementById('current-page').textContent = currentPage;
+    document.getElementById('total-pages').textContent = totalPages;
+
+    // Обновляем общее количество книг (если такой элемент есть)
+    const totalBooksElement = document.getElementById('total-books');
+    if (totalBooksElement) {
+        totalBooksElement.textContent = result.total;
+    }
+    
+    // Обновляем кнопки пагинации
+    document.getElementById('prev-btn').disabled = currentPage === 1;
+    document.getElementById('next-btn').disabled = currentPage === totalPages;
+
+    if (result.books.length === 0) {
+        booksGrid.innerHTML = '<div class="no-books">Книги не найдены</div>';
+        return;
+    }
+
+    let booksHTML = '';
+    result.books.forEach(book => {
+        const getAbbreviation = (title) => {
+            const words = title.split(' ');
+            if (words.length >= 2) {
+                return words[0][0] + words[1][0];
+            }
+            return title.substring(0, 2);
+        };
+
+        booksHTML += `
+            <div class="book-card">
+                <div class="book-image-container">
+                    ${book.cover_image ? 
+                        `<img src="${book.cover_image}" 
+                              alt="${book.title}" 
+                              class="book-image"
+                              onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"book-image-placeholder\"><span>${getAbbreviation(book.title)}</span></div>` : 
+                        `<div class="book-image-placeholder">
+                            <span>${getAbbreviation(book.title)}</span>
+                        </div>`
+                    }
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title" title="${book.title}">${book.title}</h3>
+                    <p class="book-author">${book.author}</p>
+                    <div class="book-meta">
+                        <span>📖 ${book.pages} стр.</span>
+                        ${book.year ? `<span class="book-year">${book.year} г.</span>` : ''}
+                    </div>
+                    <p class="book-publisher">${book.publisher}</p>
+                    ${book.genre ? `<div class="book-genre">${book.genre}</div>` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    booksGrid.innerHTML = booksHTML;
+}
+
+
+    function applyFilters() {
+        currentFilters = {
+            title: document.getElementById('title').value.trim(),
+            author: document.getElementById('author').value.trim(),
+            publisher: document.getElementById('publisher').value,
+            min_pages: document.getElementById('min-pages').value || '',
+            max_pages: document.getElementById('max-pages').value || '',
+            sort_by: currentFilters.sort_by,
+            sort_order: currentFilters.sort_order
+        };
+        
+        currentPage = 1;
+        loadBooks();
+    }
+
+    function resetFilters() {
+        document.getElementById('title').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('publisher').value = '';
+        document.getElementById('min-pages').value = '';
+        document.getElementById('max-pages').value = '';
+        
+        currentFilters = {
+            title: '',
+            author: '',
+            publisher: '',
+            min_pages: '',
+            max_pages: '',
+            sort_by: 'id',
+            sort_order: 'asc'
+        };
+        
+        document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.sort-btn[data-order="asc"]').classList.add('active');
+        document.querySelector('.sort-btn[data-order="desc"]').classList.remove('active');
+        
+        currentPage = 1;
+        loadBooks();
+    }
+
+    function changeSort(sortBy) {
+        currentFilters.sort_by = sortBy;
+        
+        document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        currentPage = 1;
+        loadBooks();
+    }
+
+    function changeOrder(order) {
+        currentFilters.sort_order = order;
+        
+        document.querySelectorAll('.sort-btn[data-order]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        currentPage = 1;
+        loadBooks();
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadBooks();
+        }
+    }
+
+    function nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadBooks();
+        }
+    }
+
+    function showError(message) {
+        const container = document.querySelector('.container');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        container.insertBefore(errorDiv, container.firstChild);
+        
+        setTimeout(() => errorDiv.remove(), 5000);
+    }
+
+    // Поиск при нажатии Enter
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleInput = document.getElementById('title');
+        const authorInput = document.getElementById('author');
+        
+        if (titleInput) {
+            titleInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') applyFilters();
+            });
+        }
+        
+        if (authorInput) {
+            authorInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') applyFilters();
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        {% if not is_admin %}
+        <div class="demo-info">
+            <strong>Демо-доступ:</strong> Для входа в админ-панель используйте логин <code>admin</code> и пароль <code>admin123</code>
+        </div>
+        {% endif %}
+
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="title">Название книги:</label>
+                    <input type="text" id="title" placeholder="Введите название...">
+                </div>
+                <div class="filter-group">
+                    <label for="author">Автор:</label>
+                    <input type="text" id="author" placeholder="Введите автора...">
+                </div>
+                <div class="filter-group">
+                    <label for="publisher">Издательство:</label>
+                    <select id="publisher">
+                        <option value="">Все издательства</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Количество страниц:</label>
+                    <div class="range-group">
+                        <input type="number" id="min-pages" placeholder="От" min="0">
+                        <span>—</span>
+                        <input type="number" id="max-pages" placeholder="До" min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="apply-btn" onclick="applyFilters()">Применить фильтры</button>
+                <button class="reset-btn" onclick="resetFilters()">Сбросить фильтры</button>
+            </div>
+        </div>
+
+        <div class="books-container">
+            <div class="sort-controls">
+                <div>
+                    <span>Сортировать по:</span>
+                    <div class="sort-group">
+                        <button class="sort-btn" data-sort="title" onclick="changeSort('title')">Названию</button>
+                        <button class="sort-btn" data-sort="author" onclick="changeSort('author')">Автору</button>
+                        <button class="sort-btn" data-sort="pages" onclick="changeSort('pages')">Страницам</button>
+                        <button class="sort-btn" data-sort="year" onclick="changeSort('year')">Году</button>
+                    </div>
+                </div>
+                <div>
+                    <span>Порядок:</span>
+                    <div class="sort-group">
+                        <button class="sort-btn active" data-order="asc" onclick="changeOrder('asc')">↑ Возрастание</button>
+                        <button class="sort-btn" data-order="desc" onclick="changeOrder('desc')">↓ Убывание</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="books-grid" class="books-grid">
+                <div class="loading">Загрузка книг...</div>
+            </div>
+
+            <div class="pagination">
+                <button class="page-btn" onclick="prevPage()" id="prev-btn" disabled>← Назад</button>
+                <span class="page-info">Страница <span id="current-page">1</span> из <span id="total-pages">1</span></span>
+                <button class="page-btn" onclick="nextPage()" id="next-btn">Вперед →</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,863 @@
+{% extends "base.html" %}
+
+{% block lab %}Управление книгами{% endblock %}
+
+{% block script %}
+<style>
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        gap: 20px;
+    }
+
+    .add-book-btn {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .add-book-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .logout-btn {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .books-table {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+
+    th {
+        padding: 16px;
+        text-align: left;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+    }
+
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    td {
+        padding: 12px;
+        vertical-align: top;
+    }
+
+    .book-image-cell {
+        width: 100px;
+        padding: 8px;
+    }
+
+    .book-image-small {
+        width: 80px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .book-image-placeholder {
+        width: 80px;
+        height: 100px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .book-title-cell {
+        max-width: 200px;
+        min-width: 150px;
+    }
+
+    .book-title {
+        font-weight: 600;
+        color: #2c3e50;
+        line-height: 1.4;
+    }
+
+    .book-author {
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 4px;
+    }
+
+    .book-pages {
+        text-align: center;
+        color: #555;
+    }
+
+    .book-publisher {
+        max-width: 150px;
+        color: #555;
+    }
+
+    .book-year {
+        text-align: center;
+        color: #777;
+    }
+
+    .actions {
+        width: 180px;
+    }
+
+    .actions-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+    .edit-btn {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-1px);
+    }
+
+    .delete-btn {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #c0392b;
+        transform: translateY(-1px);
+    }
+
+    /* Модальные окна */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 40px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalSlide 0.3s ease;
+        box-shadow: 3px 3px 5px black;
+    }
+
+    @keyframes modalSlide {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .modal-header h2 {
+        color: #333;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+        padding: 5px;
+        line-height: 1;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+        grid-column: span 2;
+    }
+
+    .form-group.half-width {
+        grid-column: span 1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+    }
+
+    .form-group textarea {
+        min-height: 80px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .image-preview {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .image-preview img {
+        max-width: 100px;
+        max-height: 150px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .image-preview .no-image {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .save-btn {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .save-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .cancel-btn {
+        background-color: #95a5a6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .cancel-btn:hover {
+        background-color: #7f8c8d;
+        transform: translateY(-1px);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .error-message {
+        background-color: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .success-message {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .demo-actions {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    .init-demo-btn {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .init-demo-btn:hover {
+        opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+        .controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
+
+<script>
+    let books = [];
+    let bookToDelete = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let totalBooks = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBooks();
+        setupForm();
+    });
+
+    async function callRPC(method, params = {}) {
+        try {
+            const response = await fetch('/rgz/json-rpc-api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: method,
+                    params: params,
+                    id: Date.now()
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+            
+            return data.result;
+        } catch (error) {
+            console.error('RPC Error:', error);
+            showError(error.message);
+            return null;
+        }
+    }
+
+    async function loadBooks() {
+        const tbody = document.getElementById('books-table-body');
+        tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка книг...</td></tr>';
+
+        // Используем пагинацию как на главной странице
+        const result = await callRPC('get_books', { 
+            page: currentPage,
+            per_page: 20  // Показываем по 20 книг на странице
+        });
+        
+        if (!result) return;
+        
+        // Обновляем информацию о пагинации
+        books = result.books;
+        totalBooks = result.total;
+        totalPages = result.total_pages;
+        
+        // Обновляем отображение страниц
+        document.getElementById('current-page').textContent = currentPage;
+        document.getElementById('total-pages').textContent = totalPages;
+        
+        // Обновляем кнопки
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        document.getElementById('next-btn').disabled = currentPage === totalPages;
+        
+        // Показываем общее количество книг
+        const totalElement = document.createElement('div');
+        totalElement.style.cssText = 'margin-top: 10px; color: #666; font-size: 14px;';
+        totalElement.textContent = `Всего книг: ${totalBooks}`;
+        
+        // Убедимся, что элемент вставлен только один раз
+        const existingTotal = document.querySelector('.total-books-info');
+        if (existingTotal) existingTotal.remove();
+        
+        totalElement.className = 'total-books-info';
+        document.querySelector('.controls').appendChild(totalElement);
+        
+        renderBooksTable();
+    }
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadBooks();
+            // Прокручиваем к верху таблицы
+            document.querySelector('.books-table').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+    function nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadBooks();
+            // Прокручиваем к верху таблицы
+            document.querySelector('.books-table').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Функция для перехода на конкретную страницу
+    function goToPage(page) {
+        if (page >= 1 && page <= totalPages) {
+            currentPage = page;
+            loadBooks();
+            document.querySelector('.books-table').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    function renderBooksTable() {
+        const tbody = document.getElementById('books-table-body');
+        
+        if (books.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7">Нет книг. Добавьте первую книгу!</td></tr>';
+            return;
+        }
+
+        let html = '';
+        books.forEach(book => {
+            const getAbbreviation = (title) => {
+                const words = title.split(' ');
+                if (words.length >= 2) {
+                    return words[0][0] + words[1][0];
+                }
+                return title.substring(0, 2);
+            };
+
+            html += `
+                <tr>
+                    <td class="book-image-cell">
+                        ${book.cover_image ? 
+                            `<img src="${book.cover_image}" 
+                                  alt="${book.title}" 
+                                  class="book-image-small"
+                                  onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"book-image-placeholder\"></div>` : 
+                            `<div class="book-image-placeholder">${getAbbreviation(book.title)}</div>`
+                        }
+                    </td>
+                    <td class="book-title-cell">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author}</div>
+                    </td>
+                    <td class="book-pages">${book.pages}</td>
+                    <td class="book-publisher">${book.publisher}</td>
+                    <td class="book-year">${book.year || '-'}</td>
+                    <td>${book.genre || '-'}</td>
+                    <td class="actions">
+                        <div class="actions-buttons">
+                            <button onclick="editBook(${book.id})" class="action-btn edit-btn">
+                                ✏️ Редактировать
+                            </button>
+                            <button onclick="deleteBook(${book.id})" class="action-btn delete-btn">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function setupForm() {
+        document.getElementById('book-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const bookId = document.getElementById('book-id').value;
+            const bookData = {
+                title: document.getElementById('modal-title-input').value,
+                author: document.getElementById('modal-author').value,
+                pages: parseInt(document.getElementById('modal-pages').value),
+                publisher: document.getElementById('modal-publisher').value,
+                year: document.getElementById('modal-year').value || null,
+                genre: document.getElementById('modal-genre').value || null,
+                cover_image: document.getElementById('modal-cover').value || null,
+                description: document.getElementById('modal-description').value || null
+            };
+
+            const result = await callRPC(
+                bookId ? 'update_book' : 'add_book',
+                bookId ? { id: bookId, ...bookData } : bookData
+            );
+
+            if (result) {
+                showSuccess(bookId ? 'Книга обновлена!' : 'Книга добавлена!');
+                closeModal();
+                loadBooks();
+            }
+        });
+    }
+
+    async function editBook(id) {
+        const result = await callRPC('get_book', { id: id });
+        
+        if (result) {
+            document.getElementById('book-id').value = id;
+            document.getElementById('modal-title').textContent = 'Редактировать книгу';
+            document.getElementById('modal-title-input').value = result.title;
+            document.getElementById('modal-author').value = result.author;
+            document.getElementById('modal-pages').value = result.pages;
+            document.getElementById('modal-publisher').value = result.publisher;
+            document.getElementById('modal-year').value = result.year || '';
+            document.getElementById('modal-genre').value = result.genre || '';
+            document.getElementById('modal-cover').value = result.cover_image || '';
+            document.getElementById('modal-description').value = result.description || '';
+            
+            openModal();
+        }
+    }
+
+    function deleteBook(id) {
+        const book = books.find(b => b.id === id);
+        if (book) {
+            bookToDelete = id;
+            document.getElementById('delete-message').textContent = 
+                `Вы уверены, что хотите удалить книгу "${book.title}"?`;
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+    }
+
+    async function confirmDelete() {
+        if (bookToDelete) {
+            const result = await callRPC('delete_book', { id: bookToDelete });
+            
+            if (result) {
+                showSuccess('Книга удалена!');
+                closeDeleteModal();
+                loadBooks();
+            }
+        }
+    }
+
+    function openAddModal() {
+        document.getElementById('book-id').value = '';
+        document.getElementById('modal-title').textContent = 'Добавить книгу';
+        document.getElementById('book-form').reset();
+        openModal();
+    }
+
+    function openModal() {
+        document.getElementById('book-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('book-modal').style.display = 'none';
+        document.getElementById('book-form').reset();
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('delete-modal').style.display = 'none';
+        bookToDelete = null;
+    }
+
+    async function logout() {
+        const result = await callRPC('logout_admin');
+        if (result) {
+            window.location.href = '/rgz/';
+        }
+    }
+
+    async function initDemoBooks() {
+        if (confirm('Загрузить демонстрационные книги (100+ книг)? Существующие книги не будут удалены.')) {
+            const response = await fetch('/rgz/init-demo');
+            const result = await response.text();
+            alert(result);
+            loadBooks();
+        }
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        const successDiv = document.getElementById('success-message');
+        successDiv.textContent = message;
+        successDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    // Закрытие модальных окон при клике вне их
+    window.onclick = function(event) {
+        const bookModal = document.getElementById('book-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        
+        if (event.target === bookModal) {
+            closeModal();
+        }
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
+    }
+</script>
+{% endblock %}
+
+{% block main %}
+    <div class="controls">
+        <button onclick="openAddModal()" class="add-book-btn">
+            <span>+</span> Добавить книгу
+        </button>
+        <div class="demo-actions">
+            <button onclick="initDemoBooks()" class="init-demo-btn">
+                Загрузить демо-книги
+            </button>
+            <button onclick="logout()" class="logout-btn">Выйти</button>
+        </div>
+    </div>
+
+    <div id="error-message" class="error-message" style="display: none;"></div>
+    <div id="success-message" class="success-message" style="display: none;"></div>
+
+    <div class="books-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Обложка</th>
+                    <th>Название / Автор</th>
+                    <th>Страницы</th>
+                    <th>Издательство</th>
+                    <th>Год</th>
+                    <th>Жанр</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="books-table-body">
+                <tr>
+                    <td colspan="7" class="loading">Загрузка книг...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- После таблицы книг, перед модальными окнами -->
+    <div class="pagination">
+        <button class="page-btn" onclick="prevPage()" id="prev-btn" disabled>← Назад</button>
+        <span class="page-info">
+            Страница <span id="current-page">1</span> из <span id="total-pages">1</span>
+        </span>
+        <button class="page-btn" onclick="nextPage()" id="next-btn">Вперед →</button>
+    </div>
+
+    <!-- Модальное окно добавления/редактирования книги -->
+    <div id="book-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Добавить книгу</h2>
+                <button onclick="closeModal()" class="close-modal">×</button>
+            </div>
+            
+            <form id="book-form">
+                <input type="hidden" id="book-id">
+                
+                <div class="form-grid">
+                    <div class="form-group half-width">
+                        <label for="modal-title-input">Название *</label>
+                        <input type="text" id="modal-title-input" required>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="modal-author">Автор *</label>
+                        <input type="text" id="modal-author" required>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="modal-pages">Количество страниц *</label>
+                        <input type="number" id="modal-pages" min="1" required>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="modal-publisher">Издательство *</label>
+                        <input type="text" id="modal-publisher" required>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="modal-year">Год издания</label>
+                        <input type="number" id="modal-year" min="1000" max="2025">
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="modal-genre">Жанр</label>
+                        <input type="text" id="modal-genre">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="modal-cover">Ссылка на обложку</label>
+                        <input type="url" id="modal-cover" placeholder="https://example.com/cover.jpg">
+                        <div id="image-preview" class="image-preview">
+                            <div class="no-image">Предпросмотр обложки</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="modal-description">Описание</label>
+                        <textarea id="modal-description"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()" class="cancel-btn">Отмена</button>
+                    <button type="submit" class="save-btn">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Подтверждение удаления</h2>
+                <button onclick="closeDeleteModal()" class="close-modal">×</button>
+            </div>
+            
+            <p id="delete-message">Вы уверены, что хотите удалить эту книгу?</p>
+            
+            <div class="modal-actions">
+                <button onclick="closeDeleteModal()" class="cancel-btn">Отмена</button>
+                <button onclick="confirmDelete()" class="save-btn" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Предпросмотр изображения
+        document.getElementById('modal-cover').addEventListener('input', function(e) {
+            const preview = document.getElementById('image-preview');
+            const url = e.target.value;
+            
+            if (url && url.match(/\.(jpeg|jpg|gif|png|webp)$/) != null) {
+                preview.innerHTML = `<img src="${url}" alt="Предпросмотр" onerror="this.parentElement.innerHTML='<div class=\"no-image\">Ошибка загрузки изображения</div>';" />`;
+            } else if (url) {
+                preview.innerHTML = '<div class="no-image">Некорректная ссылка на изображение</div>';
+            } else {
+                preview.innerHTML = '<div class="no-image">Предпросмотр обложки</div>';
+            }
+        });
+    </script>
+{% endblock %}
