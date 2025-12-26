@@ -235,22 +235,20 @@
                     {{ current_user.login[0]|upper }}
                 </div>
                 <span>Привет, {{ current_user.login }}!</span>
-                <a href="/lab8/logout" class="auth-btn" style="background: rgba(255, 0, 0, 0.2);">
+                <a href="/lab9/logout" class="auth-btn" style="background: rgba(255, 0, 0, 0.2);">
                     🚪 Выйти
                 </a>
             </div>
         {% else %}
-            <a href="/lab8/login" class="auth-btn">
+            <a href="/lab9/login" class="auth-btn">
                 🔐 Войти
             </a>
-            <a href="/lab8/register" class="auth-btn">
+            <a href="/lab9/register" class="auth-btn">
                 📝 Регистрация
             </a>
         {% endif %}
     </div>
     <div class="container">
-        <a href="/lab8/login">Авторизоваться</a>
-        <a href="/lab8/register">Зарегистрироваться</a>
         <div class="header">
             <h1 class="title">🎁 Новогодние Подарки 🎄</h1>
             <p style="color: #ffcc00;">Найди спрятанные подарки и получи поздравления!</p>
@@ -284,7 +282,7 @@
                     🎭 Сбросить мои открытия
                 </button>
             {% else %}
-                <a href="/lab8/login" class="btn btn-primary">
+                <a href="/lab9/login" class="btn btn-primary">
                     🔐 Войти для доступа ко всем подаркам
                 </a>
             {% endif %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">Создать аккаунт</h1>
+
+        {% if error %}
+            <div class="auth-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="/lab9/register" method="post" class="auth-form">
+            <div class="input-group">
+                <input type="text" name="login" placeholder="Придумайте логин" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Придумайте пароль" required>
+            </div>
+
+            <button type="submit" class="auth-button">
+                Продолжить
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-error {
+    background: #fee;
+    color: #c33;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c33;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.auth-button {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+    background: #3a7bc8;
+}
+</style>
+{% endblock %}

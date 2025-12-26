@@ -7,6 +7,13 @@ from os import path
 from datetime import datetime
 import random
 import json
+from werkzeug.security import generate_password_hash, check_password_hash
+from db import db
+from db.models import users, articles
+from flask_login import login_user, login_required, current_user, logout_user
+
+
+
 
 lab9 = Blueprint('lab9', __name__)
 
@@ -31,6 +38,7 @@ TOTAL_GIFTS = 10
 @lab9.route('/lab9/')
 def main():
     return render_template('lab9/main.html')
+
 
 def get_gift_positions():
     """Получает или генерирует позиции подарков (хранятся в сессии)"""
@@ -252,6 +260,67 @@ def reset_session():
         session.pop('user_gifts_opened')
     
     return jsonify({'success': True, 'message': 'Ваши открытия сброшены'})
+@lab9.route('/lab9/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/lab9')
+
+@lab9.route('/lab9/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('lab9/login.html')
+    
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
+    remember = request.form.get('remember') == 'on'
+    
+    if not login_form or login_form.strip() == '':
+        return render_template('lab9/login.html',
+                               error='Имя пользователя не может быть пустым')
+    if not password_form or password_form.strip() == '':
+        return render_template('lab9/login.html',
+                               error='Пароль не может быть пустым')
+    
+    user = users.query.filter_by(login=login_form).first()
+    
+    if user:
+        if check_password_hash(user.password, password_form):
+            login_user(user, remember=remember)
+            return redirect('/lab9/')
+    
+    return render_template('/lab9/login.html',
+                           error='Ошибка входа: логин и/или пароль неверны')
+
+@lab9.route('/lab9/register/', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('lab9/register.html')
+    
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
+    
+    if not login_form or login_form.strip() == '':
+        return render_template('lab9/register.html',
+                               error='Имя пользователя не может быть пустым')
+    
+    if not password_form or password_form.strip() == '':
+        return render_template('lab9/register.html',
+                               error='Пароль не может быть пустым')
+    
+    login_exists = users.query.filter_by(login=login_form).first()
+    if login_exists:
+        return render_template('lab9/register.html', 
+                               error='Такой пользователь уже существует')
+    
+    password_hash = generate_password_hash(password_form)
+    new_user = users(login=login_form, password=password_hash)
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # Автоматический логин после регистрации
+    login_user(new_user, remember=False)
+    return redirect('/lab9/')
 
 @lab9.route('/lab9/stats')
 def get_stats():
